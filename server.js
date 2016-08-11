@@ -1,5 +1,5 @@
 "use strict"
-
+var exec = require('child_process').exec;
 var bodyParser = require('body-parser');
 var httpProxy = require('http-proxy');
 var EventEmitter = require('events');
@@ -9,10 +9,12 @@ var https = require('https');
 var http = require('http');
 var ursa = require('ursa');
 var util = require('util');
+// var sys = require('sys');
 var fs = require('fs');
 class Notifier extends EventEmitter {
 }
 
+var child;
 var notify = new Notifier();
 notify.setMaxListeners(100);
 var app = express();
@@ -189,6 +191,7 @@ proxy.on('proxyRes', function(proxyRes, request, response) {
 app.get('/get_course.php?*', sendOutRequest, function(request, response) {
 	notify.on("next", function(message, status) {
 		//returnRequestedFile(response, "get_course.php");
+
 		console.log("Message received.");
 		response.append("Content-Type", "text/html");
 		response.append("cache-control", "max-age=0, no-store");
@@ -211,6 +214,12 @@ app.get('/data/*.json', function(request, response) {
 	var url = request.path;
   // url = url.replacesdata/", "");
 	// url = "/data/" + url;
+	child = exec("pwd", function (error, stdout, stderr) {
+		console.log('stdout: %s', stdout);
+		if (error !== null) {
+			console.log('exec error: ' + error);
+		}
+	});
 	console.log("Page: ", url);
 	returnRequestedFile(response, url);
 }, function(request, response) {
@@ -239,15 +248,3 @@ var server = app.listen(4001, 'localhost', function() {
 // 	var addr = secretServer.address();
 // 	console.log("Listening @ https://%s:%d", addr.address, addr.port);
 // });
-
-
-var sys = require('sys')
-var exec = require('child_process').exec;
-var child;
-// executes `pwd`
-child = exec("pwd", function (error, stdout, stderr) {
-  console.log('stdout: ' + stdout);
-  if (error !== null) {
-    console.log('exec error: ' + error);
-  }
-});

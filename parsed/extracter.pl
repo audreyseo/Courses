@@ -188,6 +188,11 @@ $string = <<'EOF';
   </div></div>
 EOF
 
+$string =~ s/.*(<title>.*)(<div class='col-xs-12 coursedetail02'>.+\z)/\1/s;
+# $string =~ s/.*(<title>.*?)(?!<div class='col-xs-12 coursedetail02'>.*)/\1/s;
+println($string);
+
+
 # Find the title of the class
 $title = $string;
 $title =~ s/.*<title>([^<]+)<\/title>.*/\1/s;
@@ -204,7 +209,7 @@ $titleString = join(" ", @split);
 # Find the day, Meeting Time(s), and/or the location
 $match = $string;
 $match =~ s/.*Meeting Time\(s\): ([^<]+).*/\1/s;
-if ($match =~ /;/) {
+  if ($match =~ /;/) {
   @split = split("; ", $match);
   @splits = ();
   foreach (@split) {
