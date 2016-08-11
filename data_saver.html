@@ -1,0 +1,121 @@
+<html>
+<head>
+<script type="text/javascript">var switchTo5x=true;</script>
+<!-- <script type="text/javascript" src="https://ws.sharethis.com/button/buttons.js"></script> -->
+<script type="text/javascript">stLight.options({publisher: "42749a5b-852f-4abd-9037-507e14846fae", doNotHash: false, doNotCopy: false, hashAddressBar: false});</script>
+<script>
+function myFavorites(q_string,crn)
+{
+  if ( ($('#my_favorite_'+crn).is(":visible"))) {
+          $('#my_favorite').hide();
+  }
+  else {
+    $('#my_favorite_' + crn).show();
+  var p_url= "https://webapps.wellesley.edu/my_courses/favorites.php";
+  var p_data = q_string;
+  jQuery.ajax({
+  type: "GET",
+  url: p_url,
+  data: p_data,
+   success: function(data) {
+ 	  // $('#my_favorite_' + crn).html(data);
+ 	  // $('div.favorite').replaceWith('<i class="fa fa-star pull-right"></i>');
+ 	  // $('div.favorite > i.fa-star-o').replaceWith('<i class="fa fa-star pull-right"></i>');
+ 	  // $('div.favorite').parent().prev().find('.fa').addClass(".fa-star");
+ 	  // $('div.favorite').parent().prev().find('i').addClass("fa-star");
+
+ 	  $('div.favorite').parent().prev().children('.coursecode_big').children('div').append('<i class="fa fa-star pull-right"></i>');
+ 	  $('div.favorite').hide();
+     }
+
+    });
+  }
+}
+
+function myWaitlist(q_string,crn)
+{
+  if ( ($('#my_waitlist_'+crn).is(":visible"))) {
+          $('#my_waitlist').hide();
+  }
+  else {
+    $('#my_waitlist_' + crn).show();
+  var p_url= "https://webapps.wellesley.edu/my_courses/waitlist.php";
+  var p_data = q_string + '&ajax=1';
+  jQuery.ajax({
+  type: "GET",
+  url: p_url,
+  data: p_data,
+   success: function(data) {
+ 	  // $('#my_favorite_' + crn).html(data);
+ 	  // $('div.favorite').replaceWith('<i class="fa fa-star pull-right"></i>');
+ 	  // $('div.favorite > i.fa-star-o').replaceWith('<i class="fa fa-star pull-right"></i>');
+ 	  // $('div.favorite').parent().prev().find('.fa').addClass(".fa-star");
+ 	  // $('div.favorite').parent().prev().find('i').addClass("fa-star");
+ 	  if (data.search('Error:') > -1) {
+ 	 	  alert(data);
+ 	  }
+ 	  else {
+ 	      $('div.waitlist').parent().prev().children('.coursecode_big').children('div').append('<i class="pull-right"><b><font color="#009900">W</font></b></i>');
+ 	      $('div.waitlist').hide();
+ 	      document.location = p_url;
+ 	  }
+	 }
+
+    });
+  }
+}
+function setCookieAndToggle(v1, v2) {
+    var d = new Date();
+    d.setTime(d.getTime() + (5*60*1000));
+    var expires = "expires="+d.toUTCString();
+    document.cookie =  "hideCB=1; " + expires;
+    toggleDiv(v1,v2);
+}
+
+function clearCookieAndToggle(v1, v2) {
+    var d = new Date();
+    var expires = "expires=Thu, 01-Jan-1970 00:00:01 GMT;";
+    document.cookie =  "hideCB=1; " + expires;
+    toggleDiv(v1,v2);
+}
+</script>
+<style>
+/*.sharethis-buttons {
+			position: absolute;
+			bottom: 35px;
+			right: 10px;
+		}
+		.sharethis-buttons .stButton {
+			margin-left: 5px;
+		}
+		.sharethis-buttons .stButton .stLarge {
+			border-radius: 50%;
+			opacity: 1.0;
+			-webkit-filter: grayscale(100%);
+			width: 20px;
+			height: 20px;
+			background-size: 20px;
+		}
+		.sharethis-buttons .stButton .stLarge:hover {
+			opacity: 1.0 !important;
+			-webkit-filter: grayscale(0);
+			background-position: 0 !important;
+		}*/
+</style>
+
+<title>  </title>
+</head>
+<div id="divHeaders" style="display: none;">  </div>
+<div id="my_favorite_" style="display: none;"></div>
+<div id="my_waitlist_" style="display: none;"></div>
+<div class="coursedetail col-xs-12"><div class="col-xs-12"></div>
+<div class='col-xs-12 coursedetail02'>
+	<span class='st_sharethis' displayText='ShareThis' st_title=' - ' st_url='https://webapps.wellesley.edu/new_course_browser/?crn=' st_via='Wellesley'></span>
+	<span class='st_facebook' displayText='Facebook' st_url='https://webapps.wellesley.edu/new_course_browser/?crn=&message= - '></span>
+	<span class='st_twitter' displayText='Tweet' st_title=' -  #WellesleyCourse' st_url='https://webapps.wellesley.edu/new_course_browser/?crn=' st_via='Wellesley'></span>
+	<span class='st_linkedin' displayText='LinkedIn' st_title=' - ' st_url='https://webapps.wellesley.edu/new_course_browser/?crn=' st_via='Wellesley'></span>
+	<span class='st_pinterest' displayText='Pinterest' st_title=' - ' st_url='https://webapps.wellesley.edu/new_course_browser/?crn=' st_via='Wellesley'></span>
+	<span class='st_email' displayText='Email' st_title=' - ' st_url='https://webapps.wellesley.edu/new_course_browser/?crn=' st_via='Wellesley'></span>
+</div></div>
+
+

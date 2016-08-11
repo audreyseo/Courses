@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Courses</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="style.css">
+
+    <!-- Dependencies -->
+    <script type="text/javascript" src="node_modules/chart.js/dist/Chart.bundle.js"></script>
+    <script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="node_modules/angular/angular.min.js"></script>
+    <script type="text/javascript" src="node_modules/angular-chart.js/angular-chart.js"></script>
+
+    <!-- My scripts!! -->
+    <script type="text/javascript" src="app/app.module.js"></script>
+    <script type="text/javascript" src="app/course-controller.controller.js"></script>
+    <script type="text/javascript" src="app/course-counter.factory.js"></script>
+    <script type="text/javascript" src="app/download-courses.service.js"></script>
+  </head>
+  <body ng-app="myApp">
+    <div ng-controller= "CourseController">
+      <button type="button" name="button" ng-click="download()">Download</button>
+      <button type="button" name="button" ng-click="cancelInterval()">Cancel Refresh</button>
+      <button type="button" name="post" ng-click="postData()">Save Data</button>
+      <button type="button" name="blah" ng-click="pickDataToShow()">Pick Data</button>
+      <br>
+      <canvas id="myChart1" class="chart chart-bar" chart-data="data.data" chart-labels="data.labels" chart-series="data.series" chart-options="data.options" width="600px" height="400px"></canvas>
+      <canvas id="myChart2" class="chart chart-bar" chart-data="data1.data" chart-labels="data1.labels" chart-series="data1.series" chart-options="data1.options" width="600px" height="400px"></canvas>
+      <canvas id="myChart2" class="chart chart-line" width="600px" height="400px"></canvas>
+      <!--<canvas id="myChart" width="600" height="400"></canvas>
+       <script>
+        var myData = {
+          labels: ["January", "February", "March", "April", "May", "June", "July"],
+          datasets: [
+            {
+              label: "My First dataset",
+              backgroundColor: [
+                  'rgba(255, 99, 132, 0.2)',
+                  'rgba(54, 162, 235, 0.2)',
+                  'rgba(255, 206, 86, 0.2)',
+                  'rgba(75, 192, 192, 0.2)',
+                  'rgba(153, 102, 255, 0.2)',
+                  'rgba(255, 159, 64, 0.2)'
+              ],
+              borderColor: [
+                  'rgba(255,99,132,1)',
+                  'rgba(54, 162, 235, 1)',
+                  'rgba(255, 206, 86, 1)',
+                  'rgba(75, 192, 192, 1)',
+                  'rgba(153, 102, 255, 1)',
+                  'rgba(255, 159, 64, 1)'
+              ],
+              borderWidth: 1,
+              data: [65, 59, 80, 81, 56, 55, 40],
+            }
+          ]
+        };
+        var ctx = $("#myChart");
+        var myBarChart = new Chart(ctx, {
+          type: 'bar',
+          data: myData,
+          options: {
+            scales: {
+              yAxes: [{
+                ticks: {
+                  beginAtZero:true
+                }
+              }]
+            }
+          }
+        });
+      </script> -->
+      <!-- <span>{{data | json}}</span> -->
+      <!-- <div id="tableHolder">
+        <table>
+          <thead>
+            <th>
+              Course Title
+            </th>
+            <th>
+              Professor
+            </th>
+            <th>
+              CRN
+            </th>
+            <th>
+              Credit Hours
+            </th>
+            <th>
+              Current Enrollment
+            </th>
+            <th>
+              Seats Available
+            </th>
+            <th>
+              Max Enrollment
+            </th>
+            <th>
+              Meeting Times
+            </th>
+            <th>
+              Days
+            </th>
+            <th>
+              Distributions
+            </th>
+          </thead>
+          <tr ng-repeat="class in courses">
+            <td class="title">
+              {{class.title}}
+            </td>
+            <td>
+              {{class.professor}}
+            </td>
+            <td>
+              {{class.regNum}}
+            </td>
+            <td>
+              {{class.credit}}
+            </td>
+            <td>
+              {{class.enrollment}}
+            </td>
+            <td>
+              {{class.available}}
+            </td>
+            <td>
+              {{class.max}}
+            </td>
+            <td class="time">
+              <div ng-repeat="t in class.time1 track by $index">
+                {{class.time1[$index]}} - {{class.time2[$index]}}
+              </div>
+            </td>
+            <td>
+              <div ng-repeat="d in class.day track by $index">
+                {{class.day[$index]}}
+              </div>
+            </td>
+            <td>
+              {{class.distr}}
+            </td>
+          </tr>
+        </table>
+      </div> -->
+    </div>
+  </body>
+</html>

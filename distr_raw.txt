@@ -1,0 +1,10 @@
+<option value="Arts, Music, Theatre, Film, Video"  >Arts, Music, Theatre, Film, Video</option>
+<option value="Epistemology and Cognition"  >Epistemology and Cognition</option>
+<option value="Historical Studies"  >Historical Studies</option>
+<option value="Language and Literature"  >Language and Literature</option>
+<option value="Mathematical Modeling"  >Mathematical Modeling</option>
+<option value="Natural and Physical Sciences"  >Natural and Physical Sciences</option>
+<option value="QR Basic Skills (QRB)"  >QR Basic Skills (QRB)</option>
+<option value="QR Overlay Courses (QRF)"  >QR Overlay Courses (QRF)</option>
+<option value="Religion, Ethics, and Moral Philosophy"  >Religion, Ethics, and Moral Philosophy</option>
+<option value="Social and Behavioral Analysis"  >Social and Behavioral Analysis</option>

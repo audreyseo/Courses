@@ -1,0 +1,21 @@
+body {
+  font-family: Arial, sans-serif;
+  font-size: 11px;
+}
+
+div#tableHolder {
+  max-height: 800px;
+  overflow-y: scroll;
+}
+
+td {
+  width: 40px;
+}
+
+td.time {
+  width: 120px;
+}
+
+td.title {
+  width: 150px;
+}
