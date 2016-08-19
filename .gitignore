@@ -6,4 +6,7 @@ fall_2016.txt
 get_course.php
 get_courses.js
 sample.html
+lib/*
+node_modules/*
+bin/*
 

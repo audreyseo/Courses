@@ -21,7 +21,7 @@ function CourseController($scope, DownloadCourses, CourseParser, $interval, $htt
   var classesPerDay = {};
   var seatsPerDay = {};
   var seatsPerLevel = {};
-  // $scope.download();
+  $scope.download();
 
   function pickDataToShow() {
     if ($scope.counter % 3 == 1) {

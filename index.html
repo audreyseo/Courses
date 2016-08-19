@@ -16,6 +16,7 @@
     <script type="text/javascript" src="app/course-controller.controller.js"></script>
     <script type="text/javascript" src="app/course-counter.factory.js"></script>
     <script type="text/javascript" src="app/download-courses.service.js"></script>
+    <script type="text/javascript" src="app/courses-viewer.directive.js"></script>
   </head>
   <body ng-app="myApp">
     <div ng-controller= "CourseController">
@@ -24,9 +25,15 @@
       <button type="button" name="post" ng-click="postData()">Save Data</button>
       <button type="button" name="blah" ng-click="pickDataToShow()">Pick Data</button>
       <br>
-      <canvas id="myChart1" class="chart chart-bar" chart-data="data.data" chart-labels="data.labels" chart-series="data.series" chart-options="data.options" width="600px" height="400px"></canvas>
+
+      <courses-viewer>
+        <wellesley-course ng-repeat="course in courses" title="course.title" distributions="course.distr" days="course.day" time1="course.time1" time2="course.time2">
+        </wellesley-course>
+      </courses-viewer>
+
+      <!-- <canvas id="myChart1" class="chart chart-bar" chart-data="data.data" chart-labels="data.labels" chart-series="data.series" chart-options="data.options" width="600px" height="400px"></canvas>
       <canvas id="myChart2" class="chart chart-bar" chart-data="data1.data" chart-labels="data1.labels" chart-series="data1.series" chart-options="data1.options" width="600px" height="400px"></canvas>
-      <canvas id="myChart2" class="chart chart-line" width="600px" height="400px"></canvas>
+      <canvas id="myChart2" class="chart chart-line" width="600px" height="400px"></canvas> -->
       <!--<canvas id="myChart" width="600" height="400"></canvas>
        <script>
         var myData = {

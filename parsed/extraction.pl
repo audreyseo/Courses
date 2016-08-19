@@ -1,5 +1,6 @@
 #!/usr/bin/perl
 use String::Util ':all';
+use POSIX;
 
 sub getContents{
   my ($name, @list);
@@ -48,7 +49,7 @@ sub keyit{
   # i.e. (key, (list, of, things)) => "key: ["list", "of", "things"]"
   $key =shift(@_);
   $len =scalar(@_);
-  if ($len == 1) {
+  if ($len == 1 && !($key =~ m/(day|time)/)) {
     $item =shift(@_);
     $string ="$item";
     if ($string =~ m/^\d+$/) {
@@ -57,7 +58,7 @@ sub keyit{
     }
     return "$key: \"$item\"";
   } else {
-    @items =@_;
+    @items = @_;
     return "$key: [\"".join("\", \"", @items)."\"]"
   }
 }
@@ -137,7 +138,6 @@ sub parseContents{
   $num = shift(@_); # The number of arrays to return.
   # The array of the unordered pieces that we want to reorder
   @parts = doubleSplit(" - ", "; ", $match);
-  println(@parts);
   $reps = scalar(@parts) / $num; # The number of elements in each array
   $result = "";
   for ($i = $num; $i > 0; $i--) {
@@ -147,56 +147,77 @@ sub parseContents{
     }
     println(@index);
     my $part = "";
-    # $result = $result . join("-", @parts[@index]);
     for ($j = $reps - 1; $j >= 0; $j--) {
-      # $part = ($part =~ m/\w/) ? (($result =~ m/\|$/) ? splice(@parts, $index[$j], 1) . $part : join("-", (splice(@parts, $index[$j], 1), $part))) : splice(@parts, $index[$j], 1) . $part;
       $part = ($part =~ m/\w/) ? join("-", (splice(@parts, $index[$j], 1), $part)) : splice(@parts, $index[$j], 1) . $part;
     }
-
     $result = ($i == 1) ? $result . $part : $result . $part . "|";
   }
   println($result);
   # print "======================\n";
-  my @resultArray = split("|", $result);
-  foreach $r (@resultArray) {
-    @r = split("-", $r);
+  my @resultArray = split(/\|/, $result);
+  my @results = ();
+  if ($resultArray[0] =~ m/-/) {
+    foreach $r (@resultArray) {
+      push(@results, split(/-/, $r));
+    }
+  } else {
+    @results = @resultArray;
   }
-  return (@resultArray);
+  for ($i = 0; $i < scalar(@results); $i++) {
+    my $index = $i + 1;
+    print "\n$index. " . $results[$i];
+  }
+  return (@results);
   # print "======================\n";
 }
 
 # Find the day, Meeting Time(s), and/or the location
 $match = $string;
 $match =~ s/.*Meeting Time\(s\): ([^<]+).*/\1/s;
-parseContents("Th - 09:00 pm - 10:00 pm; F - 04:00 pm - 06:00 pm", 3);
-if ($match =~ /;/) {
-  @split = split("; ", $match);
-  @splits = ();
-  foreach (@split) {
-    push(@splits, split(" - ", $_));
-  }
-  $length = scalar(@splits);
-  # #println($length);
-  @day = ();
-  @time1 = ();
-  @time2 = ();
-  $i = 0;
-  foreach (@splits) {
-    if ($i % 3 == 0) {
-      push(@day, $_);
-    } elsif ($i % 3 == 1) {
-      push(@time1, $_);
-    } else {
-      push(@time2, $_);
-    }
-    $i++;
-  }
+my (@results) = parseContents($match, 3);
+#parseContents("Th - 09:00 pm - 10:00 pm; F - 04:00 pm - 06:00 pm", 3); #
+if (scalar(@results) > 1 * 3) {
+  $remainder = scalar(@results) % 3;
+  $reps = (scalar(@results) - $remainder) / 3;
+  print "\nReps: $reps\n";
+  @day = @results[0..($reps - 1)];
+  @time1 = (@results[$reps..(($reps * 2) - 1)]);
+  @time2 = (@results[($reps * 2)..(($reps * 3) - 1)]);
 } else {
-  @split = split(" - ", $match);
-  @day = ($split[0]);
-  @time1 = ($split[1]);
-  @time2 = ($split[2]);
+  @day = ($results[0]);
+  @time1 = ($results[1]);
+  @time2 = ($results[2]);
 }
+
+
+# if ($match =~ /;/) {
+#   @split = split("; ", $match);
+#   @splits = ();
+#   foreach (@split) {
+#     push(@splits, split(" - ", $_));
+#   }
+#   $length = scalar(@splits);
+#   # #println($length);
+#   @day = ();
+#   @time1 = ();
+#   @time2 = ();
+#   $i = 0;
+#   foreach (@splits) {
+#     if ($i % 3 == 0) {
+#       push(@day, $_);
+#     } elsif ($i % 3 == 1) {
+#       push(@time1, $_);
+#     } else {
+#       push(@time2, $_);
+#     }
+#     $i++;
+#   }
+# } else {
+#   @split = split(" - ", $match);
+#   @day = ($split[0]);
+#   @time1 = ($split[1]);
+#   @time2 = ($split[2]);
+# }
 
 #println(@day, @time1, @time2);
 
