@@ -1,0 +1,179 @@
+.coursesViewer {
+  width: 1000px;
+  max-height: 800px;
+  overflow-y: scroll;
+}
+.courses-class {
+  cursor: pointer;
+  background-color: white;
+  color: black;
+  transition: .4s;
+}
+.courses-class.chosenClass:hover {
+  background-color: #c7c7ff;
+  color: black;
+}
+.courses-class:hover {
+  background-color: #7c7cff;
+  color: white;
+}
+.coursesSchedule {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  margin-top: -400px;
+  height: 800px;
+  width: 600px;
+}
+.courses-weekday {
+  text-align: center;
+  display: inline-block;
+  padding: 10px;
+  border-radius: 5px;
+  width: 100px;
+  height: 20px;
+  margin: 2px;
+}
+.courses-weekday-column {
+  position: relative;
+  background-color: #DDDDDD;
+  margin: 2px;
+  padding: 10px;
+  display: inline-block;
+  border-radius: 5px;
+  height: 800px;
+  width: 100px;
+}
+.courses-meet {
+  display: inline-block;
+  position: absolute;
+  background-color: #4444FF;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-y: scroll;
+  opacity: .5;
+  z-index: 200;
+  transition: 0.4s;
+}
+.courses-meet-num-1 {
+  background-color: #FF0000;
+}
+.courses-meet-num-2 {
+  background-color: #FFAA00;
+}
+.courses-meet-num-3 {
+  background-color: #FFFF00;
+}
+.courses-meet-num-4 {
+  background-color: #AAFF00;
+}
+.courses-meet-num-5 {
+  background-color: #00FF00;
+}
+.courses-meet-num-6 {
+  background-color: #00FFAA;
+}
+.courses-meet-num-7 {
+  background-color: #00FFFF;
+}
+.courses-meet-num-8 {
+  background-color: #00AAFF;
+}
+.courses-meet-num-9 {
+  background-color: #0000FF;
+}
+.courses-meet-num-10 {
+  background-color: #AA00FF;
+}
+.courses-meet-num-11 {
+  background-color: #FF00FF;
+}
+.courses-meet-num-12 {
+  background-color: #FF00AA;
+}
+.courses-meet-num-13 {
+  background-color: #FFAAAA;
+}
+.courses-meet-num-14 {
+  background-color: #FFFFAA;
+}
+.courses-meet-num-15 {
+  background-color: #AAFFFF;
+}
+.courses-meet-num-16 {
+  background-color: #AAAAFF;
+}
+.courses-meet-num-17 {
+  background-color: #AAFFAA;
+}
+.courses-meet-num-18 {
+  background-color: #FFAAFF;
+}
+.courses-meet-num-19 {
+  background-color: #2222FF;
+}
+.courses-meet-num-20 {
+  background-color: #FF2222;
+}
+.courses-meet-num-21 {
+  background-color: #22FF22;
+}
+.courses-meet-num-22 {
+  background-color: #22AAFF;
+}
+.courses-meet-num-23 {
+  background-color: #FFFF22;
+}
+.courses-meet-num-24 {
+  background-color: #FFAA22;
+}
+.courses-meet-num-25 {
+  background-color: #AAFF22;
+}
+.courses-meet-num-26 {
+  background-color: #22FFAA;
+}
+.courses-meet-num-27 {
+  background-color: #AA22FF;
+}
+.courses-meet-num-28 {
+  background-color: #FF22AA;
+}
+.courses-meet-num-29 {
+  background-color: #DDDDDD;
+}
+.courses-meet-num-30 {
+  background-color: #AAAAAA;
+}
+.courses-meet-num-31 {
+  background-color: #888888;
+}
+.courses-meet-num-32 {
+  background-color: #222222;
+}
+.courses-meet:hover {
+  opacity: 1.0;
+  z-index: 250;
+}
+div.classes {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-top: -250;
+  width: 200;
+  height: 500;
+  overflow-y: scroll;
+}
+.chosenClass {
+  color: white;
+  background-color: #4444FF;
+}
+.unselectable {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}

@@ -226,6 +226,33 @@ app.get('/data/*.json', function(request, response) {
 	console.log("Failure!!");
 });
 
+app.get('*/scripts/*.js*', function(request, response) {
+	var url = request.path;
+	// console.log("\n\nOriginal Url: %s", url);
+	var paths = {
+		"jquery.min.js": "/node_modules/jquery/dist/",
+		"angular.min.js": "/node_modules/angular/"
+	};
+	var name = url;
+	name = name.replace(/\/scripts\//, "");
+	// console.log("Received request for %s", name);
+	for (var key in paths) {
+		if (name.match(key)) {
+			url = paths[key] + name;
+			// console.log("Url: %s", url);
+			break;
+		}
+	}
+	// url = paths[name] + name;
+	// console.log("Returning %s", url);
+	returnRequestedFile(response, url);
+});
+
+app.get('/templates/*.html', function(request, response) {
+	var url = request.path;
+	returnRequestedFile(response, url);
+});
+
 app.post('/poster.json', function(request, response) {
 	console.log("Post received");
 	fs.writeFile("fall_2016.json", JSON.stringify(request.body));
@@ -239,7 +266,7 @@ app.get("index.html", function(request, response) {
 	notify.emit("thar she blows");
 });
 
-app.use("/", express.static("./"));
+app.use("/", express.static("./public/"));
 var server = app.listen(4001, 'localhost', function() {
   var addr = server.address();
   console.log("Listening @ http://%s:%d", addr.address, addr.port);

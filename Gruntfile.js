@@ -66,7 +66,6 @@ module.exports = function(grunt) {
         },
         files: {
           "public/css/pretty.css": "less/*.less",
-          "public/css/bootstrap.css": ["node_modules/bootstrap/less/mixins/*", "node_modules/bootstrap/less/variables.less", "node_modules/bootstrap/less/tooltip.less"]
         }
       },
       pretty: {
@@ -79,17 +78,6 @@ module.exports = function(grunt) {
         },
         src: "less/*.less",
         dest: "public/css/pretty.css"
-      },
-      bootstrap: {
-      	options: {
-          strictMath: true,
-          sourceMap: true,
-          outputSourceFiles: true,
-          sourceMapURL: 'bootstrap.css.map',
-          sourceMapFilename: 'public/css/bootstrap.css.map'
-        },
-      	src: ["node_modules/bootstrap/less/variables.less", "node_modules/bootstrap/less/mixins/reset-text.less", "node_modules/bootstrap/less/tooltip.less"],
-        dest: "public/css/bootstrap.css"
       }
     },
     cssmin:

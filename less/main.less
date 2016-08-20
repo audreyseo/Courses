@@ -1,7 +1,120 @@
-@choice: #DDDDFF;
+@choice: #4444FF;
+@height: '$(window).height()';
+@weekHeight: 800px;
+@weekBG: #DDDDDD;
+@weekColWidth: 150px;
+@allColors: #FF0000,#FFAA00,#FFFF00,#AAFF00,#00FF00,#00FFAA,#00FFFF,#00AAFF,#0000FF,#AA00FF,#FF00FF,#FF00AA,#FFAAAA,#FFFFAA,#AAFFFF,#AAAAFF,#AAFFAA,#FFAAFF,#2222FF,#FF2222,#22FF22,#22AAFF,#FFFF22,#FFAA22,#AAFF22,#22FFAA,#AA22FF,#FF22AA,#DDDDDD,#AAAAAA,#888888,#222222;
+// @allColors: a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, aa, ab, ac, ad, ae, af;
+@array: 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32;
 
+
+.black-text-for-light-colors(@color) when (luminance(@color) >= 50%) {
+  color: black;
+}
+
+.create-colored-classes(@iterator: 1) when(@iterator <= length(@array)) {
+  @name: extract(@array, @iterator);
+  @c: extract(@allColors, @iterator);
+  &@{name} {
+    background-color: @c;
+    .black-text-for-light-colors(@c);
+  }
+
+  .create-colored-classes((@iterator + 1));
+}
+
+.courses {
+  &Viewer {
+    width: 950px;
+    max-height: 800px;
+    overflow-y: scroll;
+  }
+
+  &-class {
+    cursor: pointer;
+    background-color: white;
+    color: black;
+    transition: .4s;
+
+    &.chosenClass:hover {
+      background-color: mix(@choice, white, 30%);
+      color: black;
+    }
+    &:hover {
+      background-color: mix(white, @choice, 30%);
+      color: white;
+    }
+  }
+
+  &Schedule {
+    position: fixed;
+    left: 52%;
+    top: 50%;
+    margin-top: -400px;
+    height: 800px;
+    width: @weekColWidth * 5 + 100px;
+  }
+
+  &-weekday {
+    text-align: center;
+    display: inline-block;
+    padding: 10px;
+    border-radius: 5px;
+    width: @weekColWidth;
+    height: 20px;
+    margin: 2px;
+    &-column {
+      position: relative;
+      background-color: @weekBG;
+      margin: 2px;
+      padding: 10px;
+      display: inline-block;
+      border-radius: 5px;
+      height: @weekHeight;
+      width: @weekColWidth;
+    }
+  }
+  &-meet {
+    display: inline-block;
+    position: absolute;
+    background-color: @choice;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    overflow-y: scroll;
+    opacity: .5;
+    z-index: 200;
+    transition: 0.4s;
+    &-num- {
+      .create-colored-classes();
+    }
+    &:hover {
+      opacity: 1.0;
+      z-index: 250;
+    }
+  }
+}
+
+div.classes {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-top: -250;
+  width: 200;
+  height: 500;
+  overflow-y: scroll;
+}
 
 .chosenClass {
   color: white;
   background-color: @choice;
+}
+
+.unselectable {
+  -webkit-touch-callout: none;
+    -webkit-user-select: none;
+     -khtml-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
 }

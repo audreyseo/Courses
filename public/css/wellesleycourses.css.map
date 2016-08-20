@@ -1,0 +1,1 @@
+{"version":3,"sources":["less/main.less"],"names":[],"mappings":"AAGA;EACE,YAAA;EACA,yBAAA","sourcesContent":["@choice: #DDDDFF;\n\n\n.chosenClass {\n  color: white;\n  background-color: @choice;\n}\n"]}

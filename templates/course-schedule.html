@@ -1,0 +1,29 @@
+<div class="coursesSchedule">
+  <button ng-click="schedule()" value="Refresh Schedule">Schedule</button><br>
+  <span class="courses-weekday">Monday</span>
+  <span class="courses-weekday">Tuesday</span>
+  <span class="courses-weekday">Wednesday</span>
+  <span class="courses-weekday">Thursday</span>
+  <span class="courses-weekday">Friday</span><br>
+  <div class="weekdays">
+    <div id="monday" class="courses-weekday-column">
+
+    </div>
+    <div id="tuesday" class="courses-weekday-column">
+
+    </div>
+    <div id="wednesday" class="courses-weekday-column">
+
+    </div>
+    <div id="thursday" class="courses-weekday-column">
+
+    </div>
+    <div id="friday" class="courses-weekday-column">
+
+    </div>
+    <!-- <div class="courses-weekday-column">
+
+    </div> -->
+  </div>
+  <div>{{selectedCourses | json}}</div>
+</div>
