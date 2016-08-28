@@ -2,7 +2,7 @@ var Notifier = require('./notifier');
 var scripts = require('./scripts');
 var ioo = require('./io');
 
-module.exports = function(notify, child) {
+module.exports = function(notify, child, exec) {
   var generic_class_request = function(aScript) {
     return function(request, response) {
       notify.on("next", function(message, status) {
