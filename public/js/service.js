@@ -15,6 +15,7 @@ function DownloadCourses($q, $http, $log) {
   service.findMissing = findMissing;
   service.debugData = [];
   service.numCourses = 0;
+  service.init = init;
   var parserDir = "parser";
   var csvDir = "csv";
   var csvName = "dummy.csv";
@@ -69,7 +70,8 @@ function DownloadCourses($q, $http, $log) {
     return obj;
   }
 
-  function init() {
+  function init(destination) {
+    destination = destination || "/data/parsed_text.json";
     // Need to fetch list of courses in order to actually do anything with them
     var promise = $http.get("/data/parsed_text.json");
     var promise2 = $http.get("/data/problem_classes.json");

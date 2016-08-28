@@ -36,12 +36,22 @@
 
 
       <courses-viewer>
+        <!-- build:remove:prod -->
         <button type="button" name="button" ng-click="download()">Download</button>
         <button type="button" name="button" ng-click="cancelInterval()">Cancel Refresh</button>
+        <!-- /build -->
+        <!-- build:remove:prod -->
         <button type="button" name="post" ng-click="postData()">Save Data</button>
+        <!-- /build -->
         <button type="button" name="deselect" ng-click="deselectAll()">Deselect All</button>
+        <select ng-model="semester">
+          <option value="201702">Spring 2017</option>
+          <option value="201609" selected="">Fall 2016</option>
+        </select>
+        <!-- build:remove:prod -->
         <button type="button" name="redownload" ng-click="redownload()">Re-Download</button>
         <button type="button" name="debug" ng-click="debug()">Debug</button>
+        <!-- /build -->
         <br>
         <wellesley-course ng-repeat="course in courses" course="course">
         </wellesley-course>
@@ -50,6 +60,7 @@
       <course-schedule courses="courses" pre-selections="previouslySelectedCourses">
       </course-schedule>
 
+      <!-- build:remove:dev,prod -->
       <!-- <div class="classes">
         {{courses | json}}
       </div> -->
@@ -173,6 +184,7 @@
           </tr>
         </table>
       </div> -->
+      <!-- /build -->
     </div>
     <script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>
   </body>

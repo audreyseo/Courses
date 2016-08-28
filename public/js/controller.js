@@ -16,6 +16,7 @@ function CourseController($scope, DownloadCourses, CourseParser, $interval, $htt
   $scope.downloadMissing = downloadMissing;
   $scope.previouslySelectedCourses = $cookies.getObject("WellesleyCourseSelections") || [];
   console.log("previouslySelectedCourses: %s", angular.toJson($scope.previouslySelectedCourses));
+  $scope.semester = "201609";
   $scope.debug = debug;
   $scope.preprocess = preprocess;
   $scope.redownload = redownload;
@@ -155,6 +156,17 @@ function CourseController($scope, DownloadCourses, CourseParser, $interval, $htt
     }
     return true;
   }
+
+  $scope.$watch('semester', function(newValue, oldValue) {
+    switch(newValue) {
+      case '201609':
+        DownloadCourses.init('data/parsed_text.json');
+        break;
+      case '201702':
+        DownloadCourses.init('data/spring_2017.json');
+        break;
+    }
+  });
 
   function preprocess(string) {
     // In: string

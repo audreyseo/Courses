@@ -3,10 +3,15 @@ from os import listdir
 from bs4 import BeautifulSoup
 import re
 path = "/Users/Audrey/Personal/Programming/Python/Workspace/WellesleyCourses"
+sem = "spring_2017"
+extension = "html"
+sem_directory = "data"
+destination = "data/spring_2017.json"
 raw_template = re.compile(r"([\w_ ]+)_raw.txt")
 option_template = re.compile(r"<option value=\"([0-9a-zA-Z,_: ]+)\"\s+\w*.*")
 display_template = re.compile(r"displayCourse\((?P<mine>[^\)]+)\)")
 strip_quotes = re.compile(r"(?<![\'a-zA-Z])\'(?![\'a-zA-Z])")
+replaceQuotes = re.compile(r"\'([a-zA-Z0-9]*)\'?");
 
 onlyFiles = [f for f in listdir(path) if (isfile(join(path, f)) and raw_template.match(f))]
 
@@ -34,21 +39,26 @@ def printArray(arry):
 # printArray(myArray)
 
 def parseCourses():
-    fall = open('fall_2016.txt', 'r')
-    fall_soup = BeautifulSoup(fall, 'html.parser')
-    courses = fall_soup.find_all("div", class_="courseitem")
+    semester = open('{0}/{1}.{2}'.format(sem_directory, sem, extension), 'r')
+    soup = BeautifulSoup(semester, 'html.parser')
+    courses = soup.find_all("div", class_="courseitem")
+    courseCodes = soup.find_all("div", class_="coursecode")
+    courseCodes = [list(tag.stripped_strings)[0] for tag in courseCodes]
     courses = [tag.a["onclick"] for tag in courses]
     courses = [display_template.sub(r"\g<mine>", s) for s in courses]
     courses = [strip_quotes.sub(r"", s) for s in courses]
-    for soup in courses:
-        print(soup, "", sep="\n")
+    courses = [replaceQuotes.sub("\"" + r"\1" + "\"", s) for s in courses]
+    for i in range(len(courses)):
+        print(courses[i], courseCodes[i] + "\n", sep=",")
     print(len(courses))
-    saver = open("parsed_text.json", "a")
-    saver.write("{\n\tcourses:\n\t[")
+    saver = open(destination, "w")
+    saver.write("{\n\t\"courses\":\n\t[")
+
     for i in range(len(courses)):
         soup = courses[i]
+        soup1 = courseCodes[i]
         comma = "," if i < len(courses) - 1 else ""
-        saver.write("\t\t[{0}]{1}\n".format(soup, comma))
+        saver.write("\t\t[{0}, \"{1}\"]{2}\n".format(soup, soup1, comma))
     saver.write("\t]\n}")
     saver.flush()
     saver.close()
