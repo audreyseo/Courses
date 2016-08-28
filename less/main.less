@@ -1,14 +1,17 @@
 @choice: #4444FF;
 @height: '$(window).height()';
 @weekHeight: 800px;
-@weekBG: #DDDDDD;
+@darkerWeekBG: #DDDDDD;
+@lighterWeekBG: #EEEEEE;
+@weekBG: @lighterWeekBG;
 @weekColWidth: 150px;
+@fullColor: red;
 @allColors: #FF0000,#FFAA00,#FFFF00,#AAFF00,#00FF00,#00FFAA,#00FFFF,#00AAFF,#0000FF,#AA00FF,#FF00FF,#FF00AA,#FFAAAA,#FFFFAA,#AAFFFF,#AAAAFF,#AAFFAA,#FFAAFF,#2222FF,#FF2222,#22FF22,#22AAFF,#FFFF22,#FFAA22,#AAFF22,#22FFAA,#AA22FF,#FF22AA,#DDDDDD,#AAAAAA,#888888,#222222;
 // @allColors: a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, aa, ab, ac, ad, ae, af;
 @array: 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32;
 
 
-.black-text-for-light-colors(@color) when (luminance(@color) >= 50%) {
+.black-text-for-light-colors(@color) when (luminance(@color) >= 75%) {
   color: black;
 }
 
@@ -23,11 +26,24 @@
   .create-colored-classes((@iterator + 1));
 }
 
+.viewer {
+  max-height: 800px;
+  width: 930px;
+  padding: 10px;
+  overflow-y: scroll;
+  position: relative;
+}
+
 .courses {
   &Viewer {
     width: 950px;
-    max-height: 800px;
+    max-height: 900px;
     overflow-y: scroll;
+    position: absolute;
+    padding: 10px;
+    left: 50%;
+    top: 50%;
+    margin-top: -450px;
   }
 
   &-class {
@@ -48,10 +64,10 @@
 
   &Schedule {
     position: fixed;
-    left: 52%;
+    left: 10%;
     top: 50%;
-    margin-top: -400px;
-    height: 800px;
+    margin-top: -500px;
+    height: 1000px;
     width: @weekColWidth * 5 + 100px;
   }
 
@@ -79,12 +95,22 @@
     position: absolute;
     background-color: @choice;
     color: white;
-    padding: 10px;
     border-radius: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
     overflow-y: scroll;
     opacity: .5;
     z-index: 200;
+
     transition: 0.4s;
+    &-long {
+      z-index: 180;
+    }
+
+    &-short {
+      z-index: 220;
+    }
+
     &-num- {
       .create-colored-classes();
     }
@@ -93,6 +119,11 @@
       z-index: 250;
     }
   }
+}
+
+.selections {
+  font-size: 10px;
+  font-family: Arial;
 }
 
 div.classes {
@@ -110,11 +141,25 @@ div.classes {
   background-color: @choice;
 }
 
+.class {
+  &Full {
+    background-color: @fullColor;
+    color: white;
+  }
+  &Unselected {
+    background-color: lighten(@choice, 90%);
+    color: black;
+  }
+  &Unselected:hover {
+    background-color: lighten(@choice, 40%);
+  }
+}
+
 .unselectable {
   -webkit-touch-callout: none;
-    -webkit-user-select: none;
-     -khtml-user-select: none;
-       -moz-user-select: none;
-        -ms-user-select: none;
-            user-select: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }

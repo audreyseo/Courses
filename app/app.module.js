@@ -3,4 +3,9 @@
 // to have Javascript deal with it, at least initially.
 // Also apparently I can't do anything without using Angular so oh well
 
-angular.module("myApp", []);
+angular.module("myApp", ['ngCookies'])
+  .config(function($cookiesProvider) {
+    var date = new Date();
+    date.setDate(date.getDate() + 60);
+    $cookiesProvider.defaults.expires = date.toUTCString();
+  });

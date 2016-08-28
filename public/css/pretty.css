@@ -1,7 +1,19 @@
+.viewer {
+  max-height: 800px;
+  width: 930px;
+  padding: 10px;
+  overflow-y: scroll;
+  position: relative;
+}
 .coursesViewer {
   width: 950px;
-  max-height: 800px;
+  max-height: 900px;
   overflow-y: scroll;
+  position: absolute;
+  padding: 10px;
+  left: 50%;
+  top: 50%;
+  margin-top: -450px;
 }
 .courses-class {
   cursor: pointer;
@@ -19,10 +31,10 @@
 }
 .coursesSchedule {
   position: fixed;
-  left: 52%;
+  left: 10%;
   top: 50%;
-  margin-top: -400px;
-  height: 800px;
+  margin-top: -500px;
+  height: 1000px;
   width: 150px * 5 + 100px;
 }
 .courses-weekday {
@@ -36,7 +48,7 @@
 }
 .courses-weekday-column {
   position: relative;
-  background-color: #DDDDDD;
+  background-color: #EEEEEE;
   margin: 2px;
   padding: 10px;
   display: inline-block;
@@ -49,19 +61,25 @@
   position: absolute;
   background-color: #4444FF;
   color: white;
-  padding: 10px;
   border-radius: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
   overflow-y: scroll;
   opacity: .5;
   z-index: 200;
   transition: 0.4s;
+}
+.courses-meet-long {
+  z-index: 180;
+}
+.courses-meet-short {
+  z-index: 220;
 }
 .courses-meet-num-1 {
   background-color: #FF0000;
 }
 .courses-meet-num-2 {
   background-color: #FFAA00;
-  color: black;
 }
 .courses-meet-num-3 {
   background-color: #FFFF00;
@@ -73,7 +91,6 @@
 }
 .courses-meet-num-5 {
   background-color: #00FF00;
-  color: black;
 }
 .courses-meet-num-6 {
   background-color: #00FFAA;
@@ -85,7 +102,6 @@
 }
 .courses-meet-num-8 {
   background-color: #00AAFF;
-  color: black;
 }
 .courses-meet-num-9 {
   background-color: #0000FF;
@@ -101,7 +117,6 @@
 }
 .courses-meet-num-13 {
   background-color: #FFAAAA;
-  color: black;
 }
 .courses-meet-num-14 {
   background-color: #FFFFAA;
@@ -113,7 +128,6 @@
 }
 .courses-meet-num-16 {
   background-color: #AAAAFF;
-  color: black;
 }
 .courses-meet-num-17 {
   background-color: #AAFFAA;
@@ -135,7 +149,6 @@
 }
 .courses-meet-num-22 {
   background-color: #22AAFF;
-  color: black;
 }
 .courses-meet-num-23 {
   background-color: #FFFF22;
@@ -143,7 +156,6 @@
 }
 .courses-meet-num-24 {
   background-color: #FFAA22;
-  color: black;
 }
 .courses-meet-num-25 {
   background-color: #AAFF22;
@@ -165,11 +177,9 @@
 }
 .courses-meet-num-30 {
   background-color: #AAAAAA;
-  color: black;
 }
 .courses-meet-num-31 {
   background-color: #888888;
-  color: black;
 }
 .courses-meet-num-32 {
   background-color: #222222;
@@ -177,6 +187,10 @@
 .courses-meet:hover {
   opacity: 1.0;
   z-index: 250;
+}
+.selections {
+  font-size: 10px;
+  font-family: Arial;
 }
 div.classes {
   position: absolute;
@@ -190,6 +204,17 @@ div.classes {
 .chosenClass {
   color: white;
   background-color: #4444FF;
+}
+.classFull {
+  background-color: red;
+  color: white;
+}
+.classUnselected {
+  background-color: #ffffff;
+  color: black;
+}
+.classUnselected:hover {
+  background-color: #ffffff;
 }
 .unselectable {
   -webkit-touch-callout: none;

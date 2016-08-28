@@ -17,9 +17,9 @@ function coursesViewer() {
       };
 
       this.addCourse = function(course) {
-        if (courses.length === 0) {
-          $scope.select(course);
-        }
+        // if (courses.length === 0) {
+        //   $scope.select(course);
+        // }
         var days = course.day;
         // console.log("Type of 'days': " + (typeof days));
         var time1 = course.time1;

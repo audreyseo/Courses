@@ -25,5 +25,90 @@
 
     </div> -->
   </div>
-  <div>{{selectedCourses | json}}</div>
+  <div class="selections">
+    <table>
+      <thead>
+        <th ng-repeat="attribute in courseAttributes">{{attribute}}</th>
+      </thead>
+      <tbody>
+        <tr ng-repeat="course in selectedCourses">
+          <td>
+            {{course.regNum}}
+          </td>
+          <td>
+            {{course.dept}}
+          </td>
+          <td>
+            {{course.dNum}}
+          </td>
+          <td>
+            {{course.titleString}}
+          </td>
+          <td>
+            {{course.day | json}}
+          </td>
+          <td>
+            {{course.time1 | json}}
+          </td>
+          <td>
+            {{course.time2 | json}}
+          </td>
+          <td>
+            {{course.building}}
+          </td>
+          <td>
+            {{course.room}}
+          </td>
+          <td>
+            {{course.credit}}
+          </td>
+          <td>
+            {{course.available}}
+          </td>
+          <td>
+            {{course.distributions}}
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <td>
+
+        </td>
+        <td>
+
+        </td>
+        <td>
+
+        </td>
+        <td>
+
+        </td>
+        <td>
+
+        </td>
+        <td>
+
+        </td>
+        <td>
+
+        </td>
+        <td>
+
+        </td>
+        <td>
+
+        </td>
+        <td>
+          {{credits}}
+        </td>
+        <td>
+
+        </td>
+        <td>
+
+        </td>
+      </tfoot>
+    </table>
+  </div>
+  <!-- <div>{{selectedCourses | json}}</div> -->
 </div>

@@ -50,15 +50,19 @@ router.use(function(req, res, next) {
 httpServer.listen(4004);
 httpsServer.listen(4002);
 
+// httpServer listens for event "request" and paasses the request on to
+// the proxy server.
 httpServer.on('request', function(request, response) {
-	console.log("Requested");
 	proxyRequest(request, response);
 });
 
+// Listens for the event "thar she blows" and calls appropriate
+// callback.
 notify.on("thar she blows", function() {
 	console.log("Whale spotted.");
 });
 
+// Demos encryption and decryption.
 function demo() {
 	var bigText = "This should say 'I am a fluffy bunny.'"
 
@@ -71,6 +75,8 @@ function demo() {
 	var decrypted = decrypt(encrypted, keySizeBits/8);
 	console.log(bigText, " vs ",  decrypted, "\n");
 }
+
+// Encrypts a string.
 function encrypt(clearText, keySizeBytes) {
     var buffer = new Buffer(clearText);
     var maxBufferSize = keySizeBytes - 42; //according to ursa documentation
@@ -96,6 +102,8 @@ function encrypt(clearText, keySizeBytes) {
     //concatenates all encrypted buffers and returns the corresponding String
     return Buffer.concat(encryptedBuffersList).toString('base64');
 }
+
+// Decrypts a string.
 function decrypt(encryptedString, keySizeBytes) {
 
     var encryptedBuffer = new Buffer(encryptedString, 'base64');
@@ -120,6 +128,8 @@ function decrypt(encryptedString, keySizeBytes) {
     //concatenates all decrypted buffers and returns the corresponding String
     return Buffer.concat(decryptedBuffers).toString();
 }
+
+// Returns a requested file based on response and the name of a file.
 function returnRequestedFile(response, fileName) {
 	response.sendFile(fileName, {root: __dirname}, function(err) {
 		if (err) {
@@ -130,6 +140,8 @@ function returnRequestedFile(response, fileName) {
 		}
 	});
 }
+
+// Performs a request to the http server that houses the proxy server.
 function sendOutRequest(request, response, next) {
 	console.log("Yep.");
 	var req = http.request({
@@ -147,12 +159,14 @@ function sendOutRequest(request, response, next) {
 	req.end();
 	next();
 }
+
+// Performs a proxy request. Acts as middleware.
 function proxyRequest(request, response) {
 	var url = request.url;
 	saved.response = response;
 	// path = path.replace("/get_course.php?", "");
 	url = url.replace("/get_course.php?", "");
-	console.log("\nurl: ", url, "\n");
+	console.log("\nRequested url: ", url, "\n");
 	request.url = "display_single_course_cb.php?" + url;
 	// options.foward = "https://webapps.wellesley.edu/new_course_browser/display_single_course_cb.php?" + url;
 	proxy.web(request, response, {
@@ -165,6 +179,7 @@ function proxyRequest(request, response) {
 	});
 }
 
+// Listens for proxy response event, and calls proper callback.
 proxy.on('proxyRes', function(proxyRes, request, response) {
 	// console.log('RAW Response from the target', JSON.stringify(proxyRes.headers, true, 2), "\n");
 	// console.log(proxyRes);
@@ -173,31 +188,75 @@ proxy.on('proxyRes', function(proxyRes, request, response) {
 			console.log("Body:\n", request.body, "\n");
 		}
 	}
+	var messageString = "";
 	proxyRes.on("data", function(msg) {
-		var messageString = msg.toString('utf8') + "\n";
-		console.log("Data recieved");
-		// console.log("Message:\n", messageString);
-		// console.log(response);
-		// fs.writeFile("get_course.php", messageString, //(util.inspect(response) + '\n\n' + util.inspect(request) + '\n\n' + util.inspect(saved.response)),
-		// 	function(err) {
-		// 		if (err) throw err;
-		// 		console.log("\n\nIt is saved.\n\n");
-		notify.emit("next", messageString, response.statusCode);
-			// }
-		// );
+		messageString += msg.toString('utf8');
+		console.log("Data received");
+
+		if (messageString.match(/<\/div><\/div>\s*$/)) {
+			messageString = messageString.replace(/'#my_favorite_'\+crn/g, "");
+			messageString = messageString.replace(/'#my_(favorite_?|waitlist_?)'(\+crn?)/g, "");
+			messageString = messageString.replace(/'#my_favorite'/g, "");
+			messageString = messageString.replace(/'#my_favorite_'/g, "");
+			messageString = messageString.replace(/'#my_waitlist_'\+crn/g, "");
+			messageString = messageString.replace(/'#my_waitlist'/g, "");
+			messageString = messageString.replace(/'#my_waitlist_'/g, "");
+			messageString = messageString.replace(/'div\.(favorite|waitlist)('?)/g, "");
+			messageString = messageString.replace(/'div\.favorite/g, "");
+			messageString = messageString.replace(/'div\.waitlist'/g, "");
+			messageString = messageString.replace(/\+/g, "");
+			messageString = messageString.replace(/crn/g, "");
+			messageString = messageString.replace(/(?!\\)(["'])/g, "\\$1");
+
+			notify.emit("next", messageString, response.statusCode);
+		}
 	});
 });
 
-app.get('/get_course.php?*', sendOutRequest, function(request, response) {
-	notify.on("next", function(message, status) {
-		//returnRequestedFile(response, "get_course.php");
+// Removes "get_bad.php" from debugging urls and replaces it with
+// "get_course.php".
+function cleanUpURL(request, response, next) {
+	request.url = request.url.replace(/\/get_bad\.php/, "/get_course.php");
+	next();
+}
 
-		console.log("Message received.");
+
+// App wants to get the debug version of a particular course, so that we
+// can test extraction.pl.
+app.get('/get_bad.php?*', cleanUpURL, sendOutRequest, function(request, response) {
+	notify.on("next", function(message, status) {
+		console.log("Message:\n%s", message);
+		child = exec(`perl parser/scripts/test_extraction.pl \"${message}\"`, function(error, stdout, stderr) {
+			console.log("stdout: %s", stdout);
+			if (error !== null) {
+				console.log("exec error: " + error);
+			}
+		});
 		response.append("Content-Type", "text/html");
 		response.append("cache-control", "max-age=0, no-store");
 		response.status(status);
 		response.send(message);
 		// console.log("sent");
+		notify = new Notifier();
+		notify.setMaxListeners(100);
+	});
+});
+
+
+// App wants a particular course, and this should return information
+// pertaining to said course.
+app.get('/get_course.php?*', sendOutRequest, function(request, response) {
+	notify.on("next", function(message, status) {
+		child = exec(`perl parser/scripts/extraction.pl \"${message}\"`, function(error, stdout, stderr) {
+			console.log("stdout: %s", stdout);
+			if (error !== null) {
+				console.log("exec error: " + error);
+			}
+		});
+		response.append("Content-Type", "text/html");
+		response.append("cache-control", "max-age=0, no-store");
+		response.status(status);
+		response.send(message);
 		notify = new Notifier();
 		notify.setMaxListeners(100);
 	});
@@ -210,10 +269,20 @@ proxy.on('error', function(error, request, response) {
 	response.end('Something went wrong with the proxy');
 });
 
+// Browser is requesting a CSV file containing data pertaining to the
+// courses. Needs to return an object relative to where server is, not
+// "public" directory.
+app.get('/parser/csv/*.csv', function(request, response) {
+	var url = request.path;
+	console.log("Returning %s", url);
+	returnRequestedFile(response, url);
+});
+
+// Browser is requesting json objects that contain data pertaining to
+// the courses. Needs to return object at a relative path that doesn't
+// begin with "public".
 app.get('/data/*.json', function(request, response) {
 	var url = request.path;
-  // url = url.replacesdata/", "");
-	// url = "/data/" + url;
 	child = exec("pwd", function (error, stdout, stderr) {
 		console.log('stdout: %s', stdout);
 		if (error !== null) {
@@ -226,12 +295,16 @@ app.get('/data/*.json', function(request, response) {
 	console.log("Failure!!");
 });
 
+// The web app is requesting library type sources, not our actual source
+// code, and we expand this simplified URL into a larger one, usually
+// beginning with node_modules.
 app.get('*/scripts/*.js*', function(request, response) {
 	var url = request.path;
 	// console.log("\n\nOriginal Url: %s", url);
 	var paths = {
 		"jquery.min.js": "/node_modules/jquery/dist/",
-		"angular.min.js": "/node_modules/angular/"
+		"angular.min.js": "/node_modules/angular/",
+		'angular-cookies.min.js': "/node_modules/angular-cookies/"
 	};
 	var name = url;
 	name = name.replace(/\/scripts\//, "");

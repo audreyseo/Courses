@@ -9,4 +9,6 @@ sample.html
 lib/*
 node_modules/*
 bin/*
-
+random_jsons/*
+parser/old/*
+class_json/*

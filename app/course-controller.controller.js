@@ -6,15 +6,19 @@
 angular.module("myApp")
   .controller("CourseController", CourseController)
 
-CourseController.$inject = ["$scope", "DownloadCourses", "CourseParser", '$interval', '$http', 'CourseCounter'];
+CourseController.$inject = ["$scope", "DownloadCourses", "CourseParser", '$interval', '$http', '$cookies', 'CourseCounter'];
 
-function CourseController($scope, DownloadCourses, CourseParser, $interval, $http, CourseCounter) {
+function CourseController($scope, DownloadCourses, CourseParser, $interval, $http, $cookies, CourseCounter) {
   $scope.courses = [];
   $scope.index = 0;
   $scope.deselectAll = deselectAll;
   $scope.download = download;
   $scope.downloadMissing = downloadMissing;
+  $scope.previouslySelectedCourses = $cookies.getObject("WellesleyCourseSelections") || [];
+  console.log("previouslySelectedCourses: %s", angular.toJson($scope.previouslySelectedCourses));
+  $scope.debug = debug;
   $scope.preprocess = preprocess;
+  $scope.redownload = redownload;
   $scope.cancelInterval = cancelInterval;
   $scope.postData = postData;
   $scope.pickDataToShow = pickDataToShow;
@@ -22,13 +26,35 @@ function CourseController($scope, DownloadCourses, CourseParser, $interval, $htt
   var classesPerDay = {};
   var seatsPerDay = {};
   var seatsPerLevel = {};
+
+  function debug() {
+    DownloadCourses.debug();
+  }
+
   $scope.download();
+
+  $scope.$on("NeedToSaveSelections", function(event, data) {
+    var newData = data.map(function(val, index, array) {
+      return val.regNum;
+    });
+    console.log("New data: %s", newData.join(","));
+    $cookies.putObject("WellesleyCourseSelections", newData);
+    console.log("Received NeedToSaveSelections Event");
+  });
 
   function deselectAll() {
     angular.forEach($scope.courses, function(elem, index) {
       if (elem.selected) {
         elem.selected = false;
       }
+    });
+  }
+
+  function redownload() {
+    $scope.downloadPromise = DownloadCourses.getCourse();
+    $scope.downloadPromise.then(function(response) {
+      console.log("Responded.");
+      redownload();
     });
   }
 
@@ -66,9 +92,9 @@ function CourseController($scope, DownloadCourses, CourseParser, $interval, $htt
   }
 
   function download() {
-    var promise = $http.get("/data/fall_2016.json");
-    promise.then(function(response) {
-      $scope.courses = angular.fromJson(response.data);
+    var promise = DownloadCourses.downloadCsv(); //$http.get("/data/fall_2016.json");
+    promise.promise.then(function(data) {
+      $scope.courses = data;
       classesPerDay = CourseCounter.findNumClassesPerWeekday($scope.courses);
       seatsPerDay = CourseCounter.findNumSeatsPerWeekday($scope.courses);
       seatsPerLevel = CourseCounter.findNumSeats($scope.courses);

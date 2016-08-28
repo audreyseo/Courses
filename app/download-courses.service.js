@@ -7,17 +7,82 @@ DownloadCourses.$inject = ["$q", "$http", "$log"]
 function DownloadCourses($q, $http, $log) {
   var service = {};
   var count = 0;
+  var debugCount = 0;
   service.courseData = [];
+  service.debug = debug;
+  service.downloadCsv = downloadCsv;
   service.getCourse = getCourse;
   service.findMissing = findMissing;
+  service.debugData = [];
+  service.numCourses = 0;
+  var parserDir = "parser";
+  var csvDir = "csv";
+  var csvName = "dummy.csv";
   init();
+
+  function debug() {
+    if (debugCount < service.numDebugs) {
+      var promise = service.getCourse(service.debugData[debugCount], null, "/get_bad.php");
+      promise.then(function(data) {
+        debugCount++;
+        service.debug();
+      });
+    }
+  }
+
+  function downloadCsv() {
+    var promise = $http.get(`/${parserDir}/${csvDir}/${csvName}`);
+    var deferred = $q.defer();
+    promise.then(function(response) {
+      $log.info("Successful response: ", response.status, response.statusText);
+
+      var comma = ";";
+      var csv = response.data.split("\n");
+      var headers = csv[0].split(comma);
+      service.data = [];
+      var special = ["day", "time1", "time2", "distCode", "distDescription", "distributions"];
+      for (var i = 1; i < csv.length; i++) {
+        var line = csv[i].split(comma);
+        var obj = {};
+        for (var j = 0; j < line.length; j++) {
+          if (!line[j].match(/\|/) && (special.indexOf(headers[j]) < 0)) {
+            obj[headers[j]] = line[j];
+          } else if (line[j].match(/\|/)){
+            if (headers[j] === "day") {
+              line[j] = line[j].replace(/\d/g, "");
+            }
+            obj[headers[j]] = line[j].split("|");
+          } else if (special.indexOf(headers[j]) >= 0) {
+            obj[headers[j]] = [line[j]];
+          } else {
+            obj[headers[j]] = line[j];
+          }
+        }
+        service.data.push(obj);
+      }
+      $log.info("Course data: %s", angular.toJson(service.data));
+      deferred.resolve(service.data);
+    });
+    var obj = {};
+    obj.originalPromise = promise;
+    obj.promise = deferred.promise;
+    return obj;
+  }
+
   function init() {
     // Need to fetch list of courses in order to actually do anything with them
     var promise = $http.get("/data/parsed_text.json");
+    var promise2 = $http.get("/data/problem_classes.json");
     promise.then(function(response) {
       $log.info("Successful Response: ", response.status, response.statusText);
       // $log.info("Data: ", response.data);
       service.courseData = angular.fromJson(response.data.courses);
+      service.numCourses = service.courseData.length;
+    });
+    promise2.then(function(response) {
+      $log.info("Successful Response: ", response.status, response.statusText);
+      service.debugData = angular.fromJson(response.data.courses);
+      service.numDebugs = service.debugData.length;
     });
   }
 
@@ -54,6 +119,8 @@ function DownloadCourses($q, $http, $log) {
   function zip(arry1, arry2) {
     // We should have 8 buckets in the array, only 6 of which we need
     var length = 6;
+    arry2.splice(6, 1);
+    arry2.splice(4,1);
     // console.log(arry2.splice(6, 1));
     // console.log(arry2.splice(4, 1));
     // console.log(arry2)
@@ -70,16 +137,17 @@ function DownloadCourses($q, $http, $log) {
   };
 
 
-  function getCourse(paramArray, index) {
+  function getCourse(paramArray, index, paramUrl) {
     // I legitimately just copied and pasted this off of the Wellesley website.
     // With a lot of tweaks of course, to handle cross-domain stuff
     index = index || count;
     count++;
     paramArray = paramArray || service.courseData[index];
+    paramUrl = paramUrl || "/get_course.php";
     var deferred = $q.defer()
     // var p_url= "https://webapps.wellesley.edu/new_course_browser/display_single_course_cb.php";
     // Changed this to a request to our own server
-    var p_url = "/get_course.php"
+    var p_url = paramUrl;
     var params = [
       "crn=",
       "&semester=",
@@ -93,19 +161,6 @@ function DownloadCourses($q, $http, $log) {
     // console.log("p_data: %s", p_data);
 
     var rq = $http.get(p_url + "?" + p_data);
-    // var rq = $.ajax({
-    //   type: "GET",
-    //   url: p_url,
-    //   data: p_data,
-    //   dataType: "text/html",
-    //   xhrFields: {
-    //     withCredentials: true
-    //   },
-    //   success: function(data) {
-    //     $log.debug("Request is done", data, textStatus);
-    //     deferred.resolve(data);
-    //   }
-    // });
 
     rq.then(function(data, textStatus, jqXHR) {
       $log.debug("Request is done", data.textStatus);

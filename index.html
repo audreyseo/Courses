@@ -10,6 +10,7 @@
     <!-- build:[src]:dev scripts/ -->
     <script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="node_modules/angular/angular.min.js"></script>
+    <script type="text/javascript" src="node_modules/angular-cookies/angular-cookies.min.js"></script>
     <!-- /build  -->
     <!-- <script type="text/javascript" src="node_modules/angular-chart.js/angular-chart.js"></script> -->
 
@@ -32,18 +33,21 @@
   </head>
   <body ng-app="myApp">
     <div ng-controller= "CourseController">
-      <button type="button" name="button" ng-click="download()">Download</button>
-      <button type="button" name="button" ng-click="cancelInterval()">Cancel Refresh</button>
-      <button type="button" name="post" ng-click="postData()">Save Data</button>
-      <button type="button" name="deselect" ng-click="deselectAll()">Deselect All</button>
-      <br>
+
 
       <courses-viewer>
+        <button type="button" name="button" ng-click="download()">Download</button>
+        <button type="button" name="button" ng-click="cancelInterval()">Cancel Refresh</button>
+        <button type="button" name="post" ng-click="postData()">Save Data</button>
+        <button type="button" name="deselect" ng-click="deselectAll()">Deselect All</button>
+        <button type="button" name="redownload" ng-click="redownload()">Re-Download</button>
+        <button type="button" name="debug" ng-click="debug()">Debug</button>
+        <br>
         <wellesley-course ng-repeat="course in courses" course="course">
         </wellesley-course>
       </courses-viewer>
 
-      <course-schedule courses="courses">
+      <course-schedule courses="courses" pre-selections="previouslySelectedCourses">
       </course-schedule>
 
       <!-- <div class="classes">
@@ -170,5 +174,6 @@
         </table>
       </div> -->
     </div>
+    <script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>
   </body>
 </html>
