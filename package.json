@@ -4,7 +4,8 @@
   "description": "fetches wellesley courses and displays them such that you can see what your schedule would be like",
   "main": "get_courses.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "grunt build"
   },
   "author": "Audrey Seo",
   "license": "ISC",
