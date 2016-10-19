@@ -1,17 +1,10 @@
-.viewer {
-  max-height: 800px;
-  width: 930px;
-  padding: 10px;
-  overflow-y: scroll;
-  position: relative;
-}
 .coursesViewer {
-  width: 950px;
-  max-height: 900px;
+  width: 830px;
+  height: 900px;
   overflow-y: scroll;
   position: absolute;
   padding: 10px;
-  left: 50%;
+  right: 0%;
   top: 50%;
   margin-top: -450px;
 }
@@ -20,6 +13,8 @@
   background-color: white;
   color: black;
   transition: .4s;
+  margin-top: 2px;
+  margin-bottom: 2px;
 }
 .courses-class.chosenClass:hover {
   background-color: #c7c7ff;
@@ -30,7 +25,7 @@
   color: white;
 }
 .coursesSchedule {
-  position: fixed;
+  position: absolute;
   left: 10%;
   top: 50%;
   margin-top: -500px;
@@ -223,4 +218,12 @@ div.classes {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+.viewer {
+  margin-top: 10px;
+  position: relative;
+  width: 800px;
+  height: 800px;
+  padding: 10px;
+  overflow-y: scroll;
 }

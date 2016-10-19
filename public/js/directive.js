@@ -5,14 +5,18 @@ angular.module('myApp')
 function courseSchedule() {
   return {
     restrict: 'E',
-    scope: {courses: "=", preSelections: "="},
+    scope: {courses: "=", preSelections: "=", version: "="},
     templateUrl: 'templates/course-schedule.html',
     link: function($scope, element, attrs, ctrl) {
-      $scope.selectedCourses = [];
+      $scope.selectedCourses = {};
+      $scope.selectedCourses[$scope.version] = [];
       var selected = [];
       $scope.addOldCourses = addOldCourses;
+      $scope.genericSchedule = genericSchedule;
       $scope.wasSelectedPreviously = wasSelectedPreviously;
       $scope.schedule = schedule;
+      $scope.displayInformation = displayInformation;
+      $scope.hideDisplayInformation = hideDisplayInformation;
       $scope.courseAttributes = ["regNum", "dept", "dNum", "titleString", "day", "time1", "time2", "building", "room", "credit", "available", "max", "distributions"];
       var dict = {
         'M': 'monday',
@@ -23,8 +27,16 @@ function courseSchedule() {
       };
       setTimeout(function () {
         $scope.addOldCourses();
-        $scope.schedule();
+        $scope.genericSchedule();
       }, 100);
+
+      $scope.$on('New-Preselected-Courses', function(event, data) {
+        $scope.version = data.version;
+        $scope.selectedCourses[$scope.version] = [];
+        $scope.preSelections = data.data;
+        $scope.addOldCourses();
+        $scope.genericSchedule();
+      });
 
       function wasSelectedPreviously(id) {
         if (parseInt(id) in selected) {
@@ -41,12 +53,13 @@ function courseSchedule() {
         $scope.preSelections.forEach(function(element, index) {
           $scope.courses.forEach(function(c, indexA) {
             if (parseInt(c.regNum) === parseInt(element)) {
-              console.log("Added course.");
-              $scope.selectedCourses.push(c);
-              c.selected = true;
+              console.log("Added course %d.", parseInt(c.regNum));
+              $scope.courses[indexA][$scope.version] = true;
+              $scope.selectedCourses[$scope.version].push(c);
               selected.push(element);
-            } else {
-              c.selected = false;
+              return;
+            } else if (!c[$scope.version]) {
+              $scope.courses[indexA][$scope.version] = false;
             }
           });
         });
@@ -54,22 +67,62 @@ function courseSchedule() {
           $scope.$emit("NeedToSaveSelections", $scope.selectedCourses);
         }
       }
+
       function addSelectedCourses() {
+
         $scope.courses.forEach(function(element, index) {
           var select = alreadySelected(element);
           // console.log("Should be removed?: " + (!element.selected) + " " + (select.truth));
-          if (element.selected && !select.truth) {
+          if (element[$scope.version] && !select.truth) {
             selected.push(element.regNum);
-            // console.log("Added an element.");
-            $scope.selectedCourses.push(element);
-          } else if (!element.selected && select.truth) {
+            console.log("Added an element #%s", element.regNum);
+            $scope.selectedCourses[$scope.version].push(element);
+          } else if (!element[$scope.version] && select.truth) {
             // console.log("Removing.");
-            $scope.selectedCourses.splice(select.index, 1);
+            $scope.selectedCourses[$scope.version].splice(select.index, 1);
           }
         });
-        if ($scope.selectedCourses.length > 0) {
-          $scope.$emit("NeedToSaveSelections", $scope.selectedCourses);
+        if ($scope.selectedCourses[$scope.version].length > 0) {
+          $scope.$emit("NeedToSaveSelections", $scope.selectedCourses[$scope.version]);
         }
+      }
+
+      function displayInformation(event) {
+        console.log("Something was clicked.");
+        var target = $(event.target);
+        var course = "";
+        for (var i = 0; i < $scope.selectedCourses[$scope.version].length; i++) {
+          if (target.hasClass('courses-meet-num-' + (i + 1))) {
+            course = $scope.selectedCourses[$scope.version][i];
+            break;
+          }
+        }
+        var display = $("#course-information");
+        display.addClass('selected');
+        display.html(`<div class="course-information-content"><p class="centered big-font"><em>${course.classCode}</em></p>
+        <p class="centered small-font"><em>${course.titleString}</em></p>
+        <p class="centered small-font"><em>${course.professor}</em></p>
+        <em>CRN</em>: ${course.regNum}<br>
+        <em>Credit</em>: ${course.credit}<br>
+        <em>Meeting times</em>: ${course.timeString}<br>
+        <em>Days</em>: ${course.dayString}<br>
+        <em>Enrolled</em>: ${course.enrollment}<br>
+        <em>Available</em>: ${course.available}<br>
+        <em>Max</em>: ${course.max}<br>
+        <p><em>Prerequisites</em>: ${course.prerequisites}<br>
+        <p><em>Description</em>: ${course.description}</p></div>`);
+        var deleteButton = $(document.createElement('button'));
+        deleteButton.attr('type', 'button');
+        deleteButton.addClass('course-information-delete-button');
+        deleteButton.html('X');
+        deleteButton.on('click', hideDisplayInformation);
+        deleteButton.css('z-index', 1100);
+        display.prepend(deleteButton);
+      }
+
+      function hideDisplayInformation(event) {
+        var display = $("#course-information");
+        display.removeClass('selected');
       }
 
       function emptySchedule() {
@@ -83,7 +136,8 @@ function courseSchedule() {
         return day.split(/(?!h)/);
       }
 
-      function createScheduleItem(dur, course, heightPercent, topPercent, num, str1, str2, d) {
+      function createScheduleItem(dur, course, heightPercent, topPercent, num, str1, str2, d, index) {
+        index = index || 0;
         var j = $(document.createElement('div'));
         var left = "";
         var rand = Math.random();
@@ -93,6 +147,8 @@ function courseSchedule() {
           left = "0px";
         }
 
+        // console.log("Course: %s", angular.toJson(course));
+
         j.addClass('courses-meet');
         j.addClass('courses-meet-num-' + num);
         if (dur.duration <= 120) {
@@ -100,12 +156,15 @@ function courseSchedule() {
         } else if (dur.duration >= 180) {
           j.addClass('courses-meet-long');
         }
-
+        j.attr('ng-click', 'displayInformation($event)')
+        j.on('click', displayInformation);
 
         var h = $("#" + dict[d]).height();
+
         j.html(str1 + "-" + str2 + "<br>Dept: " + course.dept + "<br>#: " + course.dNum + "<br>" + course.titleString);
         j.css({position: 'absolute', top: (topPercent * h) + "px", left: left});
-        console.log("Duration: minutes %d, %f", dur.duration, heightPercent * h);
+        // console.log("%d: %s, %s", index, d, dict[d]);
+        // console.log("Duration: minutes %d, %f", dur.duration, heightPercent * h);
         j.height(h * heightPercent + "px");
         j.width("100px");
         return j;
@@ -113,16 +172,20 @@ function courseSchedule() {
 
       function schedule() {
         addSelectedCourses();
+        genericSchedule();
+      }
+
+      function genericSchedule() {
         emptySchedule();
         $scope.credits = 0;
-        $scope.selectedCourses.forEach(function(element, indexA, sc) {
+        $scope.selectedCourses[$scope.version].forEach(function(element, indexA, sc) {
           if (element.credit) {
-            $scope.credits += parseInt(element.credit);
+            $scope.credits += parseFloat(element.credit);
           }
           if (element.day && element.time1) {
             element.day.forEach(function(d, indexB, e) {
               var days = extractDays(d);
-              console.log("Days: %s", angular.toJson(days));
+              // console.log("Days: %s", angular.toJson(days));
 
 
               var num = (indexA + 1);
@@ -140,39 +203,40 @@ function courseSchedule() {
                 var j = createScheduleItem(dur, sc[indexA], heightPercent, topPercent, num, str1, str2, d);
 
                 $("#" + dict[d]).append(j);
+                console.log("Appended to #%s", dict[d]);
               } else {
                 angular.forEach(days, function(ds, index) {
-                  var j = $(document.createElement('div'));
-                  var left = "";
-                  var rand = Math.random();
-                  var h = $("#" + dict[ds]).height();
-                  var rand = Math.random();
-
-                  if (rand > .5) {
-                    left = "49px";
-                  } else {
-                    left = "0px";
-                  }
-
-                  j.addClass('courses-meet');
-                  j.addClass('courses-meet-num-' + num);
-                  if (dur.duration <= 120) {
-                    j.addClass('courses-meet-short');
-                  } else if (dur.duration >= 180) {
-                    j.addClass('courses-meet-long');
-                  }
-                  console.log("Course: %s", angular.toJson(sc[indexA]));
-                  j.html(str1 + "-" + str2 + "<br>Dept: " + sc[indexA].dept + "<br>Course Num: " + sc[indexA].dNum + "<br>" + sc[indexA].titleString);
-
-                  j.css({position: 'absolute', top: (topPercent * h) + "px", left: left});
-                  j.height(h * heightPercent + "px");
-                  j.width("100px");
-                  j = createScheduleItem(dur, sc[indexA], heightPercent, topPercent, num, str1, str2, ds);
-
+                  // var j = $(document.createElement('div'));
+                  // var left = "";
+                  // var rand = Math.random();
+                  // var h = $("#" + dict[ds]).height();
+                  // var rand = Math.random();
+                  //
+                  // if (rand > .5) {
+                  //   left = "49px";
+                  // } else {
+                  //   left = "0px";
+                  // }
+                  //
+                  // j.addClass('courses-meet');
+                  // j.addClass('courses-meet-num-' + num);
+                  // if (dur.duration <= 120) {
+                  //   j.addClass('courses-meet-short');
+                  // } else if (dur.duration >= 180) {
+                  //   j.addClass('courses-meet-long');
+                  // }
+                  // console.log("Course: %s", angular.toJson(sc[indexA]));
+                  // j.html(str1 + "-" + str2 + "<br>Dept: " + sc[indexA].dept + "<br>Course Num: " + sc[indexA].dNum + "<br>" + sc[indexA].titleString);
+                  //
+                  // j.css({position: 'absolute', top: (topPercent * h) + "px", left: left});
+                  // j.height(h * heightPercent + "px");
+                  // j.width("100px");
+                  // j = createScheduleItem(dur, sc[indexA], heightPercent, topPercent, num, str1, str2, ds);
+                  var j = createScheduleItem(dur, sc[indexA], heightPercent, topPercent, num, str1, str2, ds, index);
                   $("#" + dict[ds]).append(j);
 
-                  console.log("%d: %s, %s", index, ds, dict[ds]);
-                  console.log("Duration: minutes %d, %f", dur.duration, heightPercent * h);
+                  // console.log("%d: %s, %s", index, ds, dict[ds]);
+                  // console.log("Duration: minutes %d, %f", dur.duration, heightPercent * h);
                   console.log("Appended to #%s", dict[ds]);
                 });
               }
@@ -214,7 +278,7 @@ function courseSchedule() {
 
       function alreadySelected(element) {
         var ret = "";
-        angular.forEach($scope.selectedCourses, function(e, index) {
+        angular.forEach($scope.selectedCourses[$scope.version], function(e, index) {
           if (e.regNum === element.regNum) {
             console.log("RegNum: " + e.regNum + " " + element.regNum);
             ret = {
@@ -238,14 +302,16 @@ function coursesViewer() {
   return {
     restrict: 'E',
     transclude: true,
-    scope: {},
+    scope: {courses: "=", version: "="},
     controller: function($scope) {
       var courses = $scope.courses = [];
+
       $scope.select = function(course) {
+        var v = $scope.version;
         // angular.forEach(courses, function(c) {
         //   c.selected = false;
         // });
-        course.selected = !course.selected;
+        course[v] = !course[v];
       };
 
       this.addCourse = function(course) {
@@ -264,9 +330,37 @@ function coursesViewer() {
         course.dayString = days.join(", ");
         course.timeString = times.join(", ");
         course.distributionString = distributions; //distributions.join(",");
-
+        course.description = course.description.replace(/\|/g, "\n");
         courses.push(course);
       };
+    },
+    link: function($scope, element, attrs, viewerCtrl) {
+      var v = $scope.version;
+      init();
+      this.addCourse = function(course) {
+        // if (courses.length === 0) {
+        //   $scope.select(course);
+        // }
+        var days = course.day;
+        // console.log("Type of 'days': " + (typeof days));
+        var time1 = course.time1;
+        var time2 = course.time2;
+        var times = [];
+        for (var i = 0; i < time1.length; i++) {
+          times.push(time1[i] + "-" + time2[i]);
+        }
+        var distributions = course.distributiions;
+        course.dayString = days.join(", ");
+        course.timeString = times.join(", ");
+        course.distributionString = distributions; //distributions.join(",");
+        return course;
+      };
+      function init() {
+        $scope.courses.forEach(function(element, index) {
+          $scope.courses[index] = this.addCourse(element);
+        });
+      }
+
     },
     templateUrl: "templates/courses-viewer.html"
   };

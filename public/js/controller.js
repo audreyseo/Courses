@@ -6,16 +6,21 @@
 angular.module("myApp")
   .controller("CourseController", CourseController)
 
-CourseController.$inject = ["$scope", "DownloadCourses", "CourseParser", '$interval', '$http', '$cookies', 'CourseCounter'];
+CourseController.$inject = ["$scope", "DownloadCourses", "CourseParser", '$interval', '$http', '$cookies', 'CourseCounter', 'coursesFilter', 'multipleDepartmentsFilter'];
 
-function CourseController($scope, DownloadCourses, CourseParser, $interval, $http, $cookies, CourseCounter) {
+function CourseController($scope, DownloadCourses, CourseParser, $interval, $http, $cookies, CourseCounter, coursesFilter, multipleDepartmentsFilter) {
+  $scope.versionNumbers = [];
   $scope.courses = [];
+  $scope.filteredCourses = [];
   $scope.index = 0;
   $scope.deselectAll = deselectAll;
+  $scope.displayingThisOne = displayingThisOne;
   $scope.download = download;
   $scope.downloadMissing = downloadMissing;
-  $scope.previouslySelectedCourses = $cookies.getObject("WellesleyCourseSelections") || [];
-  console.log("previouslySelectedCourses: %s", angular.toJson($scope.previouslySelectedCourses));
+  $scope.maxVersions = "4";
+  // $scope.previouslySelectedCourses = $cookies.getObject("WellesleyCourseSelections") || [];
+  // console.log("previouslySelectedCourses: %s", angular.toJson($scope.previouslySelectedCourses));
+  $scope.multiplesChanged = multiplesChanged;
   $scope.semester = "201609";
   $scope.debug = debug;
   $scope.preprocess = preprocess;
@@ -23,24 +28,52 @@ function CourseController($scope, DownloadCourses, CourseParser, $interval, $htt
   $scope.cancelInterval = cancelInterval;
   $scope.postData = postData;
   $scope.pickDataToShow = pickDataToShow;
+  $scope.search = search;
+  $scope.updateView = updateView;
+  $scope.clearSearch = clearSearch;
   $scope.counter = 0;
   var classesPerDay = {};
   var seatsPerDay = {};
   var seatsPerLevel = {};
+  $scope.download();
+  retrieveCookies();
 
   function debug() {
     DownloadCourses.debug();
   }
 
-  $scope.download();
+  function updateView() {
+    console.log("Updating view: %s, %s", $scope.displayVersion.letter, angular.toJson($scope.previouslySelectedCourses[$scope.displayVersion.letter]));
+    var obj = {
+      data: $scope.previouslySelectedCourses[$scope.displayVersion.letter],
+      version: $scope.displayVersion.letter
+    }
+    $scope.$broadcast("New-Preselected-Courses", obj);
+  }
+
+
+  function retrieveCookies() {
+    $scope.previouslySelectedCourses = {};
+    angular.forEach($scope.versionNumbers, function(element, index) {
+      console.log(`Element: ${angular.toJson(element)}`)
+      var mine = $cookies.getObject(`WellesleyCourseSelections-${element.letter}`);
+      if (mine) {
+        $scope.previouslySelectedCourses[element.letter] = mine;
+      } else {
+        $scope.previouslySelectedCourses[element.letter] = [];
+      }
+    });
+    console.log("previouslySelectedCourses: %s", angular.toJson($scope.previouslySelectedCourses));
+  }
 
   $scope.$on("NeedToSaveSelections", function(event, data) {
+    console.log("Received NeedToSaveSelections Event");
     var newData = data.map(function(val, index, array) {
       return val.regNum;
     });
+    $scope.previouslySelectedCourses[$scope.displayVersion.letter] = newData;
     console.log("New data: %s", newData.join(","));
-    $cookies.putObject("WellesleyCourseSelections", newData);
-    console.log("Received NeedToSaveSelections Event");
+    $cookies.putObject(`WellesleyCourseSelections-${$scope.displayVersion.letter}`, newData);
   });
 
   function deselectAll() {
@@ -49,6 +82,10 @@ function CourseController($scope, DownloadCourses, CourseParser, $interval, $htt
         elem.selected = false;
       }
     });
+  }
+
+  function displayingThisOne(letter) {
+    return($scope.displayVersion.letter === letter);
   }
 
   function redownload() {
@@ -88,18 +125,27 @@ function CourseController($scope, DownloadCourses, CourseParser, $interval, $htt
             }
         }
     });
-
-
   }
 
   function download() {
+
+    var letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"];
+    for (var i = 0; i < 10; i++) {
+      $scope.versionNumbers.push({
+        number: (i + 1),
+        letter: letters[i]
+      });
+    }
+    $scope.displayVersion = $scope.versionNumbers[0];
     var promise = DownloadCourses.downloadCsv(); //$http.get("/data/fall_2016.json");
+    $scope.departments = DownloadCourses.departments;
     promise.promise.then(function(data) {
       $scope.courses = data;
       classesPerDay = CourseCounter.findNumClassesPerWeekday($scope.courses);
       seatsPerDay = CourseCounter.findNumSeatsPerWeekday($scope.courses);
       seatsPerLevel = CourseCounter.findNumSeats($scope.courses);
       // $scope.downloadMissing();
+      $scope.filteredCourses = $scope.courses;
       console.log("Success", $scope.courses);
     });
   }
@@ -120,6 +166,14 @@ function CourseController($scope, DownloadCourses, CourseParser, $interval, $htt
         $scope.preprocess(response.data);
       });
     }, 1500, DownloadCourses.numMissing);
+  }
+
+  function multiplesChanged(obj) {
+    if ((typeof obj) !== 'undefined') {
+      $scope.filteredCourses = multipleDepartmentsFilter($scope.courses, obj);
+    } else {
+      $scope.filteredCourses = $scope.courses;
+    }
   }
 
   $scope.reloadCourse = function() {
@@ -158,14 +212,7 @@ function CourseController($scope, DownloadCourses, CourseParser, $interval, $htt
   }
 
   $scope.$watch('semester', function(newValue, oldValue) {
-    switch(newValue) {
-      case '201609':
-        DownloadCourses.init('data/parsed_text.json');
-        break;
-      case '201702':
-        DownloadCourses.init('data/spring_2017.json');
-        break;
-    }
+    DownloadCourses.init(newValue);
   });
 
   function preprocess(string) {
@@ -212,6 +259,24 @@ function CourseController($scope, DownloadCourses, CourseParser, $interval, $htt
       }
       // console.log(details);
       $scope.courses.push(details);
+    }
+  }
+
+  function clearSearch() {
+    $scope.filteredCourses = $scope.courses;
+  }
+
+  function search(string) {
+    if ((typeof string) !== 'undefined') {
+      console.log('String: ', string);
+      if (string.length >= 1) {
+        $scope.filteredCourses = coursesFilter($scope.courses, string);
+        console.log("Searched %s for %s", angular.toJson($scope.filteredCourses), string);
+      } else {
+        $scope.clearSearch();
+      }
+    } else {
+      $scope.clearSearch();
     }
   }
 }

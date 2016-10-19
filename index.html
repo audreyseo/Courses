@@ -23,42 +23,59 @@
     <!-- build:js:dev js/jquery.js --><!-- /build -->
     <!-- build:js:dev js/service.js --><!-- /build -->
 
-    <!-- build:remove -->
+    <!-- build:remove:dev,prod -->
     <script type="text/javascript" src="app/app.module.js"></script>
     <script type="text/javascript" src="app/course-controller.controller.js"></script>
     <script type="text/javascript" src="app/course-counter.factory.js"></script>
     <script type="text/javascript" src="app/download-courses.service.js"></script>
     <script type="text/javascript" src="app/courses-viewer.directive.js"></script>
+    <script type="text/javascript" src="app/coursesFilter.filter.js"></script>
     <!-- /build -->
   </head>
   <body ng-app="myApp">
     <div ng-controller= "CourseController">
+      <div id="course-information"></div>
+      <label>Number of Versions: </label><select ng-model="maxVersions" ng-options="v as v.number for v in versionNumbers">
+        <option val=""></option>
+      </select>
+      <label>Displaying Version: </label><select ng-model="displayVersion" ng-options="v as v.letter for v in versionNumbers track by v.number" ng-change="updateView()">
+        <option val=""></option>
+      </select>
+      <label>Semester: </label><select ng-model="semester">
+        <option value="201702">Spring 2017</option>
+        <option value="201609" selected="">Fall 2016</option>
+      </select>
+      <label>Department: </label><select ng-model="department" ng-change="search(department.code)" ng-options="dept.name for dept in departments">
+        <option val=""></option>
+        <!-- <option ng-repeat="dept in departments" val="{{dept.code}}">{{dept.name}}</option> -->
+      </select><br>
+      <label>Include Departments: </label><select multiple ng-model="multipleDepts" ng-change="multiplesChanged(multipleDepts)" ng-options="dept.name for dept in departments">
+        <option val=""></option>
+      </select>{{multipleDepts}}<br>
+      <input type="text" ng-model="filterString"></input>
+      <button type="button" name="search" ng-click="search(filterString)">Search</button><br>
+      <button id="clearSearchButton" type="button" name="clear-search" ng-click="clearSearch()">Clear Search</button><br>
 
+        <courses-viewer courses="filteredCourses" version="displayVersion.letter">
+          <!-- build:remove:prod -->
+          <button type="button" name="button" ng-click="download()">Download</button>
+          <button type="button" name="button" ng-click="cancelInterval()">Cancel Refresh</button>
+          <!-- /build -->
+          <!-- build:remove:prod -->
+          <button type="button" name="post" ng-click="postData()">Save Data</button>
+          <!-- /build -->
+          <button type="button" name="deselect" ng-click="deselectAll()">Deselect All</button>
+          <!-- build:remove:prod -->
+          <button type="button" name="redownload" ng-click="redownload()">Re-Download</button>
+          <button type="button" name="debug" ng-click="debug()">Debug</button>
+          <!-- /build -->
+          <br>
+          <wellesley-course ng-repeat="course in filteredCourses" course="course">
+          </wellesley-course>
+        </courses-viewer>
 
-      <courses-viewer>
-        <!-- build:remove:prod -->
-        <button type="button" name="button" ng-click="download()">Download</button>
-        <button type="button" name="button" ng-click="cancelInterval()">Cancel Refresh</button>
-        <!-- /build -->
-        <!-- build:remove:prod -->
-        <button type="button" name="post" ng-click="postData()">Save Data</button>
-        <!-- /build -->
-        <button type="button" name="deselect" ng-click="deselectAll()">Deselect All</button>
-        <select ng-model="semester">
-          <option value="201702">Spring 2017</option>
-          <option value="201609" selected="">Fall 2016</option>
-        </select>
-        <!-- build:remove:prod -->
-        <button type="button" name="redownload" ng-click="redownload()">Re-Download</button>
-        <button type="button" name="debug" ng-click="debug()">Debug</button>
-        <!-- /build -->
-        <br>
-        <wellesley-course ng-repeat="course in courses" course="course">
-        </wellesley-course>
-      </courses-viewer>
-
-      <course-schedule courses="courses" pre-selections="previouslySelectedCourses">
-      </course-schedule>
+        <course-schedule courses="courses" pre-selections="previouslySelectedCourses[displayVersion.letter]" version="displayVersion.letter">
+        </course-schedule>
 
       <!-- build:remove:dev,prod -->
       <!-- <div class="classes">

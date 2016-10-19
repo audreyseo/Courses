@@ -31,7 +31,7 @@
         <th ng-repeat="attribute in courseAttributes">{{attribute}}</th>
       </thead>
       <tbody>
-        <tr ng-repeat="course in selectedCourses">
+        <tr ng-repeat="course in selectedCourses[version]">
           <td>
             {{course.regNum}}
           </td>
@@ -64,6 +64,9 @@
           </td>
           <td>
             {{course.available}}
+          </td>
+          <td>
+            {{course.max}}
           </td>
           <td>
             {{course.distributions}}

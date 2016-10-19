@@ -1,8 +1,8 @@
 <div class="coursesViewer">
   <div ng-transclude></div>
   <div class="viewer">
-    <div class="courses-class unselectable" ng-repeat="course in courses" ng-class="{chosenClass:course.selected, classFull: (course.available == 0), classUnselected: wasSelectedPreviously(course.regNum)}" ng-click="select(course)">
-      <span class="course-title">{{course.fullTitle}}</span> – <span class="course-days">{{course.dayString}}</span> – <span class="course-times">{{course.timeString}}</span>
+    <div class="courses-class unselectable" ng-repeat="course in courses" ng-class="{chosenClass:course[version], classFull: (course.available == 0), classUnselected: wasSelectedPreviously(course.regNum)}" ng-click="select(course)">
+      <span class="course-code">{{course.classCode}}</span> - <span class="course-title">{{course.fullTitle}}</span> – <span class="course-days">{{course.dayString}}</span> – <span class="course-times">{{course.timeString}}</span>
       <!-- - <span class="course-distributions">{{course.distributionString}}</span> -->
     </div>
   </div>

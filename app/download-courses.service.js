@@ -16,10 +16,17 @@ function DownloadCourses($q, $http, $log) {
   service.debugData = [];
   service.numCourses = 0;
   service.init = init;
+  service.departments = [];
+  var semesterOfInterest = "201609";
+  var semesters = {
+    "201609": "/data/fall_2016.json",
+    "201702": "/data/spring_2017.json"
+  };
   var parserDir = "parser";
   var csvDir = "csv";
-  var csvName = "dummy.csv";
+  var csvName = "test_run.csv";
   init();
+  initDepartments();
 
   function debug() {
     if (debugCount < service.numDebugs) {
@@ -61,7 +68,7 @@ function DownloadCourses($q, $http, $log) {
         }
         service.data.push(obj);
       }
-      $log.info("Course data: %s", angular.toJson(service.data));
+      // $log.info("Course data: %s", angular.toJson(service.data));
       deferred.resolve(service.data);
     });
     var obj = {};
@@ -70,11 +77,40 @@ function DownloadCourses($q, $http, $log) {
     return obj;
   }
 
+  function initDepartments() {
+    service.departments = [];
+    var promise3 = $http.get("/parser/csv/departments.csv");
+    promise3.then(function(response) {
+      $log.info("Successful Response: ", response.status, response.statusText);
+      var data = response.data;
+      data = data.split("\n");
+      var first = data[0];
+      data.splice(0, 1);
+      var firsts = first.split(",");
+      service.departments.push({
+        code: firsts[0],
+        name: firsts[1]
+      });
+      data.forEach(function(element, index) {
+        var items = element.split(",");
+        var obj = {};
+        obj.code = items[0];
+        obj.name = items[1];
+        service.departments.push(obj);
+      });
+    });
+  }
+
   function init(destination) {
-    destination = destination || "/data/parsed_text.json";
+
+    semCopy = semesterOfInterest;
+    semesterOfInterest = destination || semCopy;
+    destination = semesters[semesterOfInterest];
+    console.log("destination: %s, semester: %s", destination, semesterOfInterest);
     // Need to fetch list of courses in order to actually do anything with them
-    var promise = $http.get("/data/parsed_text.json");
+    var promise = $http.get(destination);
     var promise2 = $http.get("/data/problem_classes.json");
+
     promise.then(function(response) {
       $log.info("Successful Response: ", response.status, response.statusText);
       // $log.info("Data: ", response.data);
@@ -86,6 +122,7 @@ function DownloadCourses($q, $http, $log) {
       service.debugData = angular.fromJson(response.data.courses);
       service.numDebugs = service.debugData.length;
     });
+
   }
 
   function findMissing(otherCourses) {

@@ -1,17 +1,10 @@
-.viewer {
-  max-height: 800px;
-  width: 930px;
-  padding: 10px;
-  overflow-y: scroll;
-  position: relative;
-}
 .coursesViewer {
-  width: 950px;
-  max-height: 900px;
+  width: 830px;
+  height: 900px;
   overflow-y: scroll;
   position: absolute;
   padding: 10px;
-  left: 50%;
+  right: 0%;
   top: 50%;
   margin-top: -450px;
 }
@@ -20,6 +13,8 @@
   background-color: white;
   color: black;
   transition: .4s;
+  margin-top: 2px;
+  margin-bottom: 2px;
 }
 .courses-class.chosenClass:hover {
   background-color: #c7c7ff;
@@ -30,8 +25,8 @@
   color: white;
 }
 .coursesSchedule {
-  position: fixed;
-  left: 0%;
+  position: absolute;
+  left: 10%;
   top: 50%;
   margin-top: -500px;
   height: 1000px;
@@ -67,6 +62,7 @@
   overflow-y: scroll;
   opacity: .5;
   z-index: 200;
+  font-size: 14px;
   transition: 0.4s;
 }
 .courses-meet-long {
@@ -188,6 +184,47 @@
   opacity: 1.0;
   z-index: 250;
 }
+#course-information {
+  background-color: white;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  color: black;
+  padding: 20px;
+  border: 1px solid white;
+  border-radius: 10px;
+  opacity: 0.0;
+  position: fixed;
+  width: 400px;
+  height: 500px;
+  top: 40%;
+  left: 50%;
+  margin-top: -250px;
+  margin-left: -200px;
+  transition: 0.4s;
+  font-size: 14px;
+}
+#course-information.selected {
+  opacity: 1.0;
+  z-index: 1000;
+}
+p.centered {
+  text-align: center;
+}
+p.centered.big-font {
+  font-size: 30px;
+}
+p.centered.small-font {
+  font-size: 20px;
+}
+.course-information-content {
+  height: 480px;
+  width: 400px;
+  overflow-y: auto;
+}
+.course-information-delete-button {
+  position: absolute;
+  left: 380px;
+  font-size: 14px;
+}
 .selections {
   font-size: 10px;
   font-family: Arial;
@@ -223,5 +260,13 @@ div.classes {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+.viewer {
+  margin-top: 10px;
+  position: relative;
+  width: 800px;
+  height: 800px;
+  padding: 10px;
+  overflow-y: scroll;
 }
 /*# sourceMappingURL=pretty.css.map */
