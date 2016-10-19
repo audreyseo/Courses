@@ -88,36 +88,36 @@ function courseSchedule() {
       }
 
       function displayInformation(event) {
-        console.log("Something was clicked.");
-        var target = $(event.target);
-        var course = "";
-        for (var i = 0; i < $scope.selectedCourses[$scope.version].length; i++) {
-          if (target.hasClass('courses-meet-num-' + (i + 1))) {
-            course = $scope.selectedCourses[$scope.version][i];
-            break;
-          }
-        }
-        var display = $("#course-information");
-        display.addClass('selected');
-        display.html(`<div class="course-information-content"><p class="centered big-font"><em>${course.classCode}</em></p>
-        <p class="centered small-font"><em>${course.titleString}</em></p>
-        <p class="centered small-font"><em>${course.professor}</em></p>
-        <em>CRN</em>: ${course.regNum}<br>
-        <em>Credit</em>: ${course.credit}<br>
-        <em>Meeting times</em>: ${course.timeString}<br>
-        <em>Days</em>: ${course.dayString}<br>
-        <em>Enrolled</em>: ${course.enrollment}<br>
-        <em>Available</em>: ${course.available}<br>
-        <em>Max</em>: ${course.max}<br>
-        <p><em>Prerequisites</em>: ${course.prerequisites}<br>
-        <p><em>Description</em>: ${course.description}</p></div>`);
-        var deleteButton = $(document.createElement('button'));
-        deleteButton.attr('type', 'button');
-        deleteButton.addClass('course-information-delete-button');
-        deleteButton.html('X');
-        deleteButton.on('click', hideDisplayInformation);
-        deleteButton.css('z-index', 1100);
-        display.prepend(deleteButton);
+        // console.log("Something was clicked.");
+        // var target = $(event.target);
+        // var course = "";
+        // for (var i = 0; i < $scope.selectedCourses[$scope.version].length; i++) {
+        //   if (target.hasClass('courses-meet-num-' + (i + 1))) {
+        //     course = $scope.selectedCourses[$scope.version][i];
+        //     break;
+        //   }
+        // }
+        // var display = $("#course-information");
+        // display.addClass('selected');
+        // display.html(`<div class="course-information-content"><p class="centered big-font"><em>${course.classCode}</em></p>
+        // <p class="centered small-font"><em>${course.titleString}</em></p>
+        // <p class="centered small-font"><em>${course.professor}</em></p>
+        // <em>CRN</em>: ${course.regNum}<br>
+        // <em>Credit</em>: ${course.credit}<br>
+        // <em>Meeting times</em>: ${course.timeString}<br>
+        // <em>Days</em>: ${course.dayString}<br>
+        // <em>Enrolled</em>: ${course.enrollment}<br>
+        // <em>Available</em>: ${course.available}<br>
+        // <em>Max</em>: ${course.max}<br>
+        // <p><em>Prerequisites</em>: ${course.prerequisites}<br>
+        // <p><em>Description</em>: ${course.description}</p></div>`);
+        // var deleteButton = $(document.createElement('button'));
+        // deleteButton.attr('type', 'button');
+        // deleteButton.addClass('course-information-delete-button');
+        // deleteButton.html('X');
+        // deleteButton.on('click', hideDisplayInformation);
+        // deleteButton.css('z-index', 1100);
+        // display.prepend(deleteButton);
       }
 
       function hideDisplayInformation(event) {
