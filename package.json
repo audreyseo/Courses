@@ -37,6 +37,7 @@
     "jshint-stylish": "^2.2.1",
     "jsonfile": "^2.3.1",
     "keypair": "^1.0.0",
+    "socket.io": "^1.5.0",
     "sys": "0.0.1",
     "ursa": "^0.9.4"
   },
