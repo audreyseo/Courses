@@ -295,6 +295,12 @@ app.get('/data/*.json', function(request, response) {
 	console.log("Failure!!");
 });
 
+app.get('*', function(request, response) {
+  var url = request.path;
+  returnRequestedFile(response, url);
+})
+
+
 // The web app is requesting library type sources, not our actual source
 // code, and we expand this simplified URL into a larger one, usually
 // beginning with node_modules.
