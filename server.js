@@ -262,11 +262,19 @@ app.get('/get_course.php?*', sendOutRequest, function(request, response) {
 	});
 });
 
+
+
 proxy.on('error', function(error, request, response) {
 	response.writeHead(500, {
 		'Content-Type': 'text/plain'
 	});
 	response.end('Something went wrong with the proxy');
+});
+
+app.get('/css/*', function(request, response) {
+  var url = request.path;
+  url = "public" + url;
+  returnRequestedFile(response, url);
 });
 
 // Browser is requesting a CSV file containing data pertaining to the
@@ -294,11 +302,6 @@ app.get('/data/*.json', function(request, response) {
 }, function(request, response) {
 	console.log("Failure!!");
 });
-
-app.get('*', function(request, response) {
-  var url = request.path;
-  returnRequestedFile(response, url);
-})
 
 
 // The web app is requesting library type sources, not our actual source
@@ -345,6 +348,11 @@ app.get("/", function(request, response) {
 
 app.get("index.html", function(request, response) {
 	notify.emit("thar she blows");
+});
+
+app.get('*', function(request, response) {
+  var url = request.path;
+  returnRequestedFile(response, url);
 });
 
 app.use("/", express.static("./public/"));
