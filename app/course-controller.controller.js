@@ -55,8 +55,9 @@ function CourseController($scope, DownloadCourses, CourseParser, $interval, $htt
   function retrieveCookies() {
     $scope.previouslySelectedCourses = {};
     angular.forEach($scope.versionNumbers, function(element, index) {
-      console.log(`Element: ${angular.toJson(element)}`)
-      var mine = $cookies.getObject(`WellesleyCourseSelections-${element.letter}`);
+      // console.log(`Element: ${angular.toJson(element)}`)
+      var mine = $cookies.getObject("WellesleyCourseSelections-" + element.letter);
+      // var mine = $cookies.getObject(`WellesleyCourseSelections-${element.letter}`);
       if (mine) {
         $scope.previouslySelectedCourses[element.letter] = mine;
       } else {
@@ -73,7 +74,8 @@ function CourseController($scope, DownloadCourses, CourseParser, $interval, $htt
     });
     $scope.previouslySelectedCourses[$scope.displayVersion.letter] = newData;
     console.log("New data: %s", newData.join(","));
-    $cookies.putObject(`WellesleyCourseSelections-${$scope.displayVersion.letter}`, newData);
+    $cookies.putObject("WellesleyCourseSelections-" + $scope.displayVersion.letter, newData);
+    // $cookies.putObject(`WellesleyCourseSelections-${$scope.displayVersion.letter}`, newData);
   });
 
   function deselectAll() {
