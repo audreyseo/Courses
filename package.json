@@ -10,7 +10,8 @@
   "license": "ISC",
   "devDependencies": {
     "angular": "^1.5.8",
-    "karma": "^1.2.0"
+    "karma": "^1.2.0",
+    "socket.io": "^1.5.0"
   },
   "dependencies": {
     "angular-chart.js": "^1.0.0",
