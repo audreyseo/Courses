@@ -333,7 +333,9 @@ app.post('/poster.json', function(request, response) {
 
 var io = require('socket.io').listen(httpsServer),
 		client = require('socket.io-client');
-
+app.get("/", function(request, response) {
+  returnRequestedFile(response, "./index.html");
+});
 
 app.get("index.html", function(request, response) {
 	notify.emit("thar she blows");
