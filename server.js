@@ -356,7 +356,7 @@ app.get('*', function(request, response) {
 });
 
 app.use("/", express.static("./public/"));
-var server = app.listen(4001, 'localhost', function() {
+var server = app.listen(process.env.PORT || 4001, 'localhost', function() {
   var addr = server.address();
   console.log("Listening @ http://%s:%d", addr.address, addr.port);
 });
