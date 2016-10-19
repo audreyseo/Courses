@@ -360,6 +360,11 @@ var server = app.listen(process.env.PORT || 4001, 'localhost', function() {
   var addr = server.address();
   console.log("Listening @ http://%s:%d", addr.address, addr.port);
 });
+
+var herokuServer = app.listen(process.env.PORT, function() {
+	var addr = herokuServer.address();
+  console.log("Listening @ http://%s:%d", addr.address, addr.port);
+});
 // var secretServer = app.listen(4002, 'localhost', function() {
 // 	var addr = secretServer.address();
 // 	console.log("Listening @ https://%s:%d", addr.address, addr.port);
