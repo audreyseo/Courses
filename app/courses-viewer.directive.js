@@ -22,6 +22,7 @@ function coursesViewer() {
         // if (courses.length === 0) {
         //   $scope.select(course);
         // }
+        // console.log("Course: " + angular.toJson(course));
         var days = course.day;
         // console.log("Type of 'days': " + (typeof days));
         var time1 = course.time1;
@@ -34,7 +35,10 @@ function coursesViewer() {
         course.dayString = days.join(", ");
         course.timeString = times.join(", ");
         course.distributionString = distributions; //distributions.join(",");
-        course.description = course.description.replace(/\|/g, "\n");
+        if (course.description != "") {
+          course.description = course.description[0].replace(/\|/g, "\n");
+        }
+
         courses.push(course);
       };
     },
