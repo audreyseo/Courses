@@ -1,5 +1,5 @@
 include/*
-sslcert/*
+#sslcert/*
 .Python
 data_saver.txt
 fall_2016.txt
